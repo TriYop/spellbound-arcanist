@@ -39,6 +39,9 @@ public:
     // Reload user presets from disk (call after save/delete to update list)
     void refreshUserPresets();
 
+    // Rename a user preset (factory presets return false; returns false if newName already exists)
+    bool renamePreset (int index, const juce::String& newName);
+
 private:
     juce::AudioProcessorValueTreeState& apvts_;
     int currentPresetIndex_ = 0; // Default to first factory preset
