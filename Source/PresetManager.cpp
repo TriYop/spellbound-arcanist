@@ -112,7 +112,17 @@ void PresetManager::loadFactoryPresets()
         { "String Machine",     "Vintage" },
         { "Oceanic Sweep",      "Vintage" },
         { "Cosmic Horizon",     "Vintage" },
-        { "Electric Night",     "Vintage" }
+        { "Electric Night",     "Vintage" },
+        { "Laser Harp",         "Vintage" },
+        // GM-inspired hit + tail sounds
+        { "GM Fantasia",    "GM" },
+        { "GM Crystal",     "GM" },
+        { "GM Atmosphere",  "GM" },
+        { "GM Brightness",  "GM" },
+        { "GM Echoes",      "GM" },
+        { "GM Sci-Fi",      "GM" },
+        { "GM Voice",       "GM" },
+        { "GM Strings",     "GM" }
     };
 
     factoryPresets_.clear();
