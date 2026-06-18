@@ -135,6 +135,34 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
         static_cast<int> (*apvts.getRawParameterValue ("filter_mode")));
     int lfoTarget = static_cast<int> (*apvts.getRawParameterValue ("lfo_target"));
 
+    // ── Osc 2 params ────────────────────────────────────────────────────────────
+    bool  osc2On        = *apvts.getRawParameterValue ("osc2_on")         > 0.5f;
+    int   osc2Waveform  = static_cast<int> (*apvts.getRawParameterValue ("osc2_waveform"));
+    int   osc2Mult      = static_cast<int> (*apvts.getRawParameterValue ("osc2_mult"));
+    float osc2Phase     = *apvts.getRawParameterValue ("osc2_phase");
+    int   osc2MixModeI  = static_cast<int> (*apvts.getRawParameterValue ("osc2_mix_mode"));
+    float osc2MixDepth  = *apvts.getRawParameterValue ("osc2_mix_depth");
+    bool  osc2EnvOn     = *apvts.getRawParameterValue ("osc2_env_on")     > 0.5f;
+    float osc2EnvAtk    = *apvts.getRawParameterValue ("osc2_env_attack");
+    float osc2EnvDec    = *apvts.getRawParameterValue ("osc2_env_decay");
+    float osc2EnvSus    = *apvts.getRawParameterValue ("osc2_env_sustain");
+    float osc2EnvRel    = *apvts.getRawParameterValue ("osc2_env_release");
+    bool  osc2EnvSusOn  = *apvts.getRawParameterValue ("osc2_env_sus_on") > 0.5f;
+    bool  osc2FltOn     = *apvts.getRawParameterValue ("osc2_flt_on")     > 0.5f;
+    float osc2FltCut    = *apvts.getRawParameterValue ("osc2_flt_cutoff");
+    float osc2FltReso   = *apvts.getRawParameterValue ("osc2_flt_reso");
+    int   osc2FltModeI  = static_cast<int> (*apvts.getRawParameterValue ("osc2_flt_mode"));
+    float osc2FenvAtk   = *apvts.getRawParameterValue ("osc2_fenv_atk");
+    float osc2FenvDec   = *apvts.getRawParameterValue ("osc2_fenv_dec");
+    float osc2FenvSus   = *apvts.getRawParameterValue ("osc2_fenv_sus");
+    float osc2FenvRel   = *apvts.getRawParameterValue ("osc2_fenv_rel");
+    bool  osc2FenvSusOn = *apvts.getRawParameterValue ("osc2_fenv_sus_on") > 0.5f;
+    float osc2FenvDepth = *apvts.getRawParameterValue ("osc2_fenv_depth");
+
+    auto osc2MixModeE  = static_cast<Voice::MixMode>       (osc2MixModeI);
+    auto osc2FltModeE  = static_cast<Filter::Mode>         (osc2FltModeI);
+    auto osc2WaveformE = static_cast<Oscillator::Waveform> (osc2Waveform);
+
     for (auto& voice : voices_)
     {
         voice.setWaveform (waveform);
@@ -158,6 +186,30 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
         voice.setLFOSpeed (lfoSpeed);
         voice.setLFODepth (lfoDepth);
         voice.setOutputGain (outputGain);
+
+        // Osc 2 chain
+        voice.setOsc2Enabled            (osc2On);
+        voice.setOsc2Waveform           (osc2WaveformE);
+        voice.setOsc2Mult               (osc2Mult);
+        voice.setOsc2Phase              (osc2Phase);
+        voice.setOsc2MixMode            (osc2MixModeE);
+        voice.setOsc2MixDepth           (osc2MixDepth);
+        voice.setOsc2EnvEnabled         (osc2EnvOn);
+        voice.setOsc2EnvAttack          (osc2EnvAtk);
+        voice.setOsc2EnvDecay           (osc2EnvDec);
+        voice.setOsc2EnvSustain         (osc2EnvSus);
+        voice.setOsc2EnvRelease         (osc2EnvRel);
+        voice.setOsc2EnvSustainEnabled  (osc2EnvSusOn);
+        voice.setOsc2FilterEnabled      (osc2FltOn);
+        voice.setOsc2FilterCutoff       (osc2FltCut);
+        voice.setOsc2FilterResonance    (osc2FltReso);
+        voice.setOsc2FilterMode         (osc2FltModeE);
+        voice.setOsc2FEnvAttack         (osc2FenvAtk);
+        voice.setOsc2FEnvDecay          (osc2FenvDec);
+        voice.setOsc2FEnvSustain        (osc2FenvSus);
+        voice.setOsc2FEnvRelease        (osc2FenvRel);
+        voice.setOsc2FEnvSustainEnabled (osc2FenvSusOn);
+        voice.setOsc2FEnvDepth          (osc2FenvDepth);
     }
 
     // Process MIDI events and route to voices
@@ -325,6 +377,80 @@ juce::AudioProcessorValueTreeState::ParameterLayout PM0AudioProcessor::createPar
     // Master parameters
     params.push_back (std::make_unique<AudioParameterFloat>
         ("output_gain", "Output Gain", -24.f, 12.f, 0.f));
+
+    // ── Oscillator 2 chain ─────────────────────────────────────────────────────
+    params.push_back (std::make_unique<AudioParameterBool>
+        ("osc2_on", "Osc 2 On", false));
+
+    params.push_back (std::make_unique<AudioParameterChoice>
+        ("osc2_waveform", "Osc 2 Waveform",
+         StringArray { "Sine", "Triangle", "Sawtooth", "Square", "Noise" }, 2));
+
+    params.push_back (std::make_unique<AudioParameterChoice>
+        ("osc2_mult", "Osc 2 Multiplier",
+         StringArray { "0.5x", "1x", "2x", "4x" }, 1));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_phase", "Osc 2 Phase", 0.f, 360.f, 0.f));
+
+    params.push_back (std::make_unique<AudioParameterChoice>
+        ("osc2_mix_mode", "Osc 2 Mix Mode",
+         StringArray { "SUM", "AM", "FM", "RING" }, 0));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_mix_depth", "Osc 2 Mix Depth", 0.f, 100.f, 50.f));
+
+    // Vol envelope 2
+    params.push_back (std::make_unique<AudioParameterBool>
+        ("osc2_env_on", "Osc 2 Env On", false));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_env_attack",  "Osc 2 Env Attack",  0.001f, 5.f,  0.1f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_env_decay",   "Osc 2 Env Decay",   0.f,    5.f,  0.5f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_env_sustain", "Osc 2 Env Sustain", 0.f,    1.f,  0.8f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_env_release", "Osc 2 Env Release", 0.001f, 10.f, 3.f));
+
+    params.push_back (std::make_unique<AudioParameterBool>
+        ("osc2_env_sus_on", "Osc 2 Env Sustain On", true));
+
+    // Filter 2
+    params.push_back (std::make_unique<AudioParameterBool>
+        ("osc2_flt_on", "Osc 2 Filter On", false));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_flt_cutoff", "Osc 2 Filter Cutoff", 20.f, 20000.f, 4000.f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_flt_reso", "Osc 2 Filter Resonance", 0.f, 1.f, 0.f));
+
+    params.push_back (std::make_unique<AudioParameterChoice>
+        ("osc2_flt_mode", "Osc 2 Filter Mode",
+         StringArray { "Low Pass", "Band Pass", "High Pass" }, 0));
+
+    // Filter envelope 2
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_fenv_atk", "Osc 2 FEnv Attack",  0.001f, 5.f,   0.001f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_fenv_dec", "Osc 2 FEnv Decay",   0.f,    5.f,   1.5f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_fenv_sus", "Osc 2 FEnv Sustain", 0.f,    1.f,   0.f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_fenv_rel", "Osc 2 FEnv Release", 0.001f, 10.f,  3.f));
+
+    params.push_back (std::make_unique<AudioParameterBool>
+        ("osc2_fenv_sus_on", "Osc 2 FEnv Sustain On", true));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("osc2_fenv_depth", "Osc 2 FEnv Depth", -100.f, 100.f, 0.f));
 
     return { params.begin(), params.end() };
 }
