@@ -20,7 +20,18 @@ PM0AudioProcessorEditor::PM0AudioProcessorEditor (PM0AudioProcessor& p)
 
     updatePresetList();
 
-    // Oscillator
+    // Oscillator — waveform selector
+    oscWaveformBox_.addItem ("Sine",     1);
+    oscWaveformBox_.addItem ("Triangle", 2);
+    oscWaveformBox_.addItem ("Sawtooth", 3);
+    oscWaveformBox_.addItem ("Square",   4);
+    addAndMakeVisible (oscWaveformBox_);
+    oscWaveformAtt_ = std::make_unique<ComboBoxAttachment> (proc_.apvts, "osc_waveform", oscWaveformBox_);
+
+    addAndMakeVisible (oscWaveformLbl_);
+    oscWaveformLbl_.setText ("Waveform", juce::dontSendNotification);
+    oscWaveformLbl_.setJustificationType (juce::Justification::centred);
+
     addAndMakeVisible (oscTuneKnob_);
     oscTuneKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
     oscTuneKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
@@ -180,6 +191,9 @@ void PM0AudioProcessorEditor::resized()
     // Oscillator group (top left)
     auto oscArea = area.removeFromLeft (180).reduced (5);
     oscArea.removeFromTop (5);
+    oscWaveformLbl_.setBounds (oscArea.removeFromTop (labelHeight));
+    oscWaveformBox_.setBounds (oscArea.removeFromTop (24).reduced (2));
+    oscArea.removeFromTop (6);
     oscTuneKnob_.setBounds (oscArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
     oscTuneLbl_.setBounds (oscArea.removeFromTop (labelHeight));
     oscDetuneKnob_.setBounds (oscArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));

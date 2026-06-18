@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Parameters>
+  <PARAM id="osc_waveform" value="1"/>
   <PARAM id="osc_tune" value="4"/>
   <PARAM id="osc_detune" value="7"/>
   <PARAM id="filter_cutoff" value="7000"/>

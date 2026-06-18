@@ -123,16 +123,19 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     float lfoSpeed = *apvts.getRawParameterValue ("lfo_speed");
     float lfoDepth = *apvts.getRawParameterValue ("lfo_depth");
     float outputGain = *apvts.getRawParameterValue ("output_gain");
+    auto waveform = static_cast<Oscillator::Waveform> (
+        static_cast<int> (*apvts.getRawParameterValue ("osc_waveform")));
 
     for (auto& voice : voices_)
     {
+        voice.setWaveform (waveform);
         voice.setOscillatorTune (oscTune);
         voice.setOscillatorDetune (oscDetune);
         voice.setFilterCutoff (filterCutoff);
-        voice.setFilterResonance (filterResonance / 100.f);
+        voice.setFilterResonance (filterResonance);
         voice.setEnvelopeAttack (envAttack);
         voice.setEnvelopeDecay (envDecay);
-        voice.setEnvelopeSustain (envSustain / 100.f);
+        voice.setEnvelopeSustain (envSustain);
         voice.setEnvelopeRelease (envRelease);
         voice.setEnvelopeFilterMod (envFilterMod);
         voice.setLFOSpeed (lfoSpeed);
@@ -228,6 +231,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PM0AudioProcessor::createPar
     std::vector<std::unique_ptr<RangedAudioParameter>> params;
 
     // Oscillator parameters
+    params.push_back (std::make_unique<AudioParameterChoice>
+        ("osc_waveform", "Waveform",
+         StringArray { "Sine", "Triangle", "Sawtooth", "Square" }, 0));
+
     params.push_back (std::make_unique<AudioParameterFloat>
         ("osc_tune", "Oscillator Tune", -24.f, 24.f, 0.f));
 

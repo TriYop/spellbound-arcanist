@@ -35,6 +35,8 @@ private:
     juce::TextButton deleteButton_ { "Delete" };
 
     // Oscillator controls
+    juce::ComboBox oscWaveformBox_;
+    juce::Label    oscWaveformLbl_;
     juce::Slider oscTuneKnob_, oscDetuneKnob_;
     juce::Label  oscTuneLbl_,  oscDetuneLbl_;
 
@@ -57,7 +59,10 @@ private:
     float displayOutputPeak_ { -100.f };
 
     // APVTS attachments
-    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+    using SliderAttachment   = juce::AudioProcessorValueTreeState::SliderAttachment;
+    using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
+
+    std::unique_ptr<ComboBoxAttachment> oscWaveformAtt_;
 
     std::unique_ptr<SliderAttachment>
         oscTuneAtt_, oscDetuneAtt_,
