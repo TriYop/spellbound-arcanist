@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Parameters>
+  <PARAM id="osc_waveform" value="2"/>
+  <PARAM id="osc_tune" value="0"/>
+  <PARAM id="osc_detune" value="8"/>
+  <PARAM id="filter_cutoff" value="1800"/>
+  <PARAM id="filter_resonance" value="0.55"/>
+  <PARAM id="filter_mode" value="0"/>
+  <PARAM id="env_attack" value="2.5"/>
+  <PARAM id="env_decay" value="2.0"/>
+  <PARAM id="env_sustain" value="0.65"/>
+  <PARAM id="env_release" value="7.0"/>
+  <PARAM id="env_filter_mod" value="-20"/>
+  <PARAM id="lfo_speed" value="0.2"/>
+  <PARAM id="lfo_depth" value="22"/>
+  <PARAM id="lfo_target" value="1"/>
+  <PARAM id="output_gain" value="-2"/>
+</Parameters>

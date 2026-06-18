@@ -103,7 +103,16 @@ void PresetManager::loadFactoryPresets()
         { "Breathing Pulse",    "Evolving" },
         { "Spiraling Cosmos",   "Evolving" },
         // Synth & Electronic
-        { "Vintage Synth Pad", "Synth" }
+        { "Vintage Synth Pad", "Synth" },
+        // Vintage — Vangelis & JMJ inspired
+        { "Blade Runner Night", "Vintage" },
+        { "Alpha Centauri",     "Vintage" },
+        { "CS80 Strings",       "Vintage" },
+        { "Epic Cinema",        "Vintage" },
+        { "String Machine",     "Vintage" },
+        { "Oceanic Sweep",      "Vintage" },
+        { "Cosmic Horizon",     "Vintage" },
+        { "Electric Night",     "Vintage" }
     };
 
     factoryPresets_.clear();

@@ -155,29 +155,35 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
 
         if (msg.isNoteOn())
         {
-            // Find the next available voice (active but oldest, or an inactive one)
-            int voiceIndex = -1;
-            float oldestTime = -1.f;
+            // Priority 1: re-use the voice already playing this note (cuts release tail)
+            // Priority 2: any free (inactive) voice
+            // Priority 3: steal the oldest active voice
+            int sameNoteVoice = -1;
+            int freeVoice     = -1;
+            int oldestVoice   = -1;
+            float oldestTime  = -1.f;
 
             for (size_t i = 0; i < voices_.size(); ++i)
             {
-                if (!voices_[i].isActive())
+                if (voices_[i].isActive() && voices_[i].getNoteNumber() == msg.getNoteNumber())
                 {
-                    voiceIndex = static_cast<int> (i);
+                    sameNoteVoice = static_cast<int> (i);
                     break;
                 }
-                else if (voices_[i].getTimeSinceNoteOn() > oldestTime)
+                if (!voices_[i].isActive() && freeVoice < 0)
+                    freeVoice = static_cast<int> (i);
+                if (voices_[i].isActive() && voices_[i].getTimeSinceNoteOn() > oldestTime)
                 {
-                    oldestTime = voices_[i].getTimeSinceNoteOn();
-                    voiceIndex = static_cast<int> (i);
+                    oldestTime  = voices_[i].getTimeSinceNoteOn();
+                    oldestVoice = static_cast<int> (i);
                 }
             }
 
+            int voiceIndex = (sameNoteVoice >= 0) ? sameNoteVoice
+                           : (freeVoice     >= 0) ? freeVoice
+                                                   : oldestVoice;
             if (voiceIndex >= 0)
-            {
-                auto& voice = voices_[static_cast<size_t> (voiceIndex)];
-                voice.noteOn (msg.getNoteNumber(), msg.getVelocity() / 127.f);
-            }
+                voices_[static_cast<size_t> (voiceIndex)].noteOn (msg.getNoteNumber(), msg.getVelocity() / 127.f);
         }
         else if (msg.isNoteOff())
         {

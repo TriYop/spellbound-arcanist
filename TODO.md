@@ -8,6 +8,10 @@
 
 - [x] **Filter mode** — `filter_mode` parameter (Low Pass / Band Pass / High Pass) with correct RBJ biquad coefficients for each mode.
 
+## Synthesis
+
+- [ ] **Velocity curve** — current response is linear (velocity/127); a power curve (e.g. `v²`) would make soft playing feel softer and the dynamic range more expressive. Could expose a `velocity_curve` parameter (0=linear, 1=quadratic, or a continuous exponent knob).
+
 ## UI
 
 - [ ] **Group controls visually** — the current flat layout of knobs needs grouping by section (Oscillator, Filter, Envelope, LFO, Master) with visual separators or panels. Needs design thinking before implementing.

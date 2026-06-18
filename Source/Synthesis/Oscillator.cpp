@@ -20,20 +20,18 @@ void Oscillator::process (juce::AudioBuffer<float>& buffer, int midiNote, float 
     baseFreq *= std::pow (2.f, tune / 1200.f);
     baseFreq *= std::pow (2.f, detune / 1200.f);
 
-    for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+    float phaseIncrement = baseFreq / static_cast<float> (sampleRate_);
+    int numChannels = buffer.getNumChannels();
+
+    for (int n = 0; n < buffer.getNumSamples(); ++n)
     {
-        auto* samples = buffer.getWritePointer (ch);
+        float sample = generateSample (phase_);
+        phase_ += phaseIncrement;
+        if (phase_ >= 1.f)
+            phase_ -= 1.f;
 
-        for (int n = 0; n < buffer.getNumSamples(); ++n)
-        {
-            samples[n] += generateSample (phase_);
-
-            float phaseIncrement = baseFreq / static_cast<float> (sampleRate_);
-            phase_ += phaseIncrement;
-
-            if (phase_ >= 1.f)
-                phase_ -= 1.f;
-        }
+        for (int ch = 0; ch < numChannels; ++ch)
+            buffer.getWritePointer (ch)[n] += sample;
     }
 }
 

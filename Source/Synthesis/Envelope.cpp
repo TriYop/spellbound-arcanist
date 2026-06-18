@@ -51,6 +51,7 @@ void Envelope::process (juce::AudioBuffer<float>& buffer)
 
 void Envelope::noteOn()
 {
+    levelAtNoteOn_ = currentLevel_; // retrigger from current level — no click when re-pressing a releasing note
     stage_ = Stage::Attack;
     stageProgress_ = 0.f;
     noteOffTriggered_ = false;
@@ -72,7 +73,7 @@ float Envelope::computeEnvelopeValue()
     {
         case Stage::Attack:
             if (attack_ > 0.f)
-                currentLevel_ = stageProgress_ / attack_;
+                currentLevel_ = levelAtNoteOn_ + (1.f - levelAtNoteOn_) * (stageProgress_ / attack_);
             else
                 currentLevel_ = 1.f;
             break;

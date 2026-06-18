@@ -50,7 +50,7 @@ void Voice::process (juce::AudioBuffer<float>& buffer)
         filterCutoffModulated *= std::pow (2.f, envelopeFilterMod_ * envValue / 1200.f);
 
     if (lfoTarget_ == 0 && lfoDepth_ > 0.1f)
-        filterCutoffModulated *= (1.f + lfoValue * lfoDepth_ * 0.1f);
+        filterCutoffModulated *= std::pow (2.f, lfoValue * lfoDepth_ * 0.02f); // ±2 octaves at full depth, always positive
 
     filter_.setCutoff (juce::jlimit (20.f, 20000.f, filterCutoffModulated));
     filter_.setResonance (filterResonance_);

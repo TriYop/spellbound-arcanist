@@ -33,7 +33,8 @@ private:
     float sustain_ = 0.8f;
     float release_ = 3.f;
 
-    float currentLevel_ = 0.f;
+    float currentLevel_   = 0.f;
+    float levelAtNoteOn_  = 0.f; // attack ramps from here to avoid click on retrigger
     float stageProgress_ = 0.f;
     float tailTime_ = 0.f;
     bool noteOffTriggered_ = false;
