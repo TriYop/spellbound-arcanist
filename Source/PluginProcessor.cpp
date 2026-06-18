@@ -58,7 +58,10 @@ int PM0AudioProcessor::getCurrentProgram()
 void PM0AudioProcessor::setCurrentProgram (int index)
 {
     if (presetManager_)
+    {
+        allNotesOffPending = true;
         presetManager_->loadPreset (index);
+    }
 }
 
 const juce::String PM0AudioProcessor::getProgramName (int index)
@@ -109,6 +112,11 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+
+    // On preset change: release all held notes so the old sound fades to silence
+    if (allNotesOffPending.exchange (false))
+        for (auto& voice : voices_)
+            voice.noteOff();
 
     // Update all voice parameters from APVTS
     float oscTune = *apvts.getRawParameterValue ("osc_tune");

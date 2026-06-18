@@ -41,7 +41,8 @@ public:
 
     PresetManager* getPresetManager() { return presetManager_.get(); }
 
-    std::atomic<float> outputPeakDb { -100.f };
+    std::atomic<float> outputPeakDb       { -100.f };
+    std::atomic<bool>  allNotesOffPending { false  };
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
