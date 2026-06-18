@@ -26,7 +26,7 @@ juce::File PresetManager::getUserPresetsDirectory() const
 {
     // Platform-specific directory selection
 #if JUCE_WINDOWS
-    auto appData = juce::File::getSpecialLocation (juce::File::commonApplicationDataDirectory);
+    auto appData = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory);
     return appData.getChildFile ("PM0").getChildFile ("presets");
 #elif JUCE_MAC
     auto appSupport = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory);
@@ -189,7 +189,10 @@ bool PresetManager::loadPresetInternal (const PresetInfo& preset)
 
         xmlElement = juce::parseXML (presetFile);
         if (!xmlElement)
+        {
+            DBG("PresetManager: failed to parse preset XML: " + presetFile.getFullPathName());
             return false;
+        }
     }
 
     // Deserialize and apply to APVTS
@@ -261,6 +264,11 @@ bool PresetManager::deletePreset (int index)
 
     // If deleted preset was current, reset to first factory preset
     if (currentPresetIndex_ == index)
+        currentPresetIndex_ = 0;
+
+    // Clamp currentPresetIndex_ to valid range after refresh (indices may have shifted)
+    auto updatedPresets = getPresetList();
+    if (currentPresetIndex_ >= static_cast<int> (updatedPresets.size()))
         currentPresetIndex_ = 0;
 
     return true;
