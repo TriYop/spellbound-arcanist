@@ -17,6 +17,7 @@ void Voice::prepare (double sampleRate, int samplesPerBlock, double tailLength)
     oscillator2_.prepare (sampleRate);
     filter_.prepare (sampleRate);
     envelope_.prepare (sampleRate, tailLength);
+    fenv_.prepare (sampleRate, tailLength);
     lfo_.prepare (sampleRate, samplesPerBlock);
 
     voiceBuffer_.setSize (2, samplesPerBlock);
@@ -42,12 +43,14 @@ void Voice::process (juce::AudioBuffer<float>& buffer)
     oscillator2_.process (voiceBuffer_, midiNoteNumber_, oscTune_ + pitchMod, -oscDetune_);
     voiceBuffer_.applyGain (0.5f);
 
-    // Filter modulation (envelope + LFO when target is filter)
-    float envValue = envelope_.getCurrentLevel();
+    // Filter modulation (dedicated filter envelope + LFO when target is filter)
+    float fenvValue = fenv_.getCurrentLevel();
+    fenv_.advance (buffer.getNumSamples());
+
     float filterCutoffModulated = filterCutoff_;
 
     if (std::abs (envelopeFilterMod_) > 0.1f)
-        filterCutoffModulated *= std::pow (2.f, envelopeFilterMod_ * envValue / 1200.f);
+        filterCutoffModulated *= std::pow (2.f, envelopeFilterMod_ * fenvValue / 25.f); // 100 = ±4 octaves
 
     if (lfoTarget_ == 0 && lfoDepth_ > 0.1f)
         filterCutoffModulated *= std::pow (2.f, lfoValue * lfoDepth_ * 0.02f); // ±2 octaves at full depth, always positive
@@ -85,9 +88,11 @@ void Voice::noteOn (int midiNoteNumber, float velocity)
 
     oscillator_.setFrequency (juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber));
     envelope_.noteOn();
+    fenv_.noteOn();
 }
 
 void Voice::noteOff()
 {
     envelope_.noteOff();
+    fenv_.noteOff();
 }

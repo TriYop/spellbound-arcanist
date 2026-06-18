@@ -1,9 +1,18 @@
 #include "PluginEditor.h"
 
+static void setupKnob (juce::Slider& knob, juce::Label& lbl,
+                       const juce::String& labelText)
+{
+    knob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+    knob.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
+    lbl.setText (labelText, juce::dontSendNotification);
+    lbl.setJustificationType (juce::Justification::centred);
+}
+
 PM0AudioProcessorEditor::PM0AudioProcessorEditor (PM0AudioProcessor& p)
     : AudioProcessorEditor (&p), proc_ (p)
 {
-    setSize (1000, 500);
+    setSize (1150, 500);
 
     // Preset selector bar
     addAndMakeVisible (presetLabel_);
@@ -32,23 +41,12 @@ PM0AudioProcessorEditor::PM0AudioProcessorEditor (PM0AudioProcessor& p)
     oscWaveformLbl_.setText ("Waveform", juce::dontSendNotification);
     oscWaveformLbl_.setJustificationType (juce::Justification::centred);
 
-    addAndMakeVisible (oscTuneKnob_);
-    oscTuneKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    oscTuneKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
-    oscTuneAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "osc_tune", oscTuneKnob_);
-
-    addAndMakeVisible (oscTuneLbl_);
-    oscTuneLbl_.setText ("Tune", juce::dontSendNotification);
-    oscTuneLbl_.setJustificationType (juce::Justification::centred);
-
-    addAndMakeVisible (oscDetuneKnob_);
-    oscDetuneKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    oscDetuneKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
-    oscDetuneAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "osc_detune", oscDetuneKnob_);
-
-    addAndMakeVisible (oscDetuneLbl_);
-    oscDetuneLbl_.setText ("Detune", juce::dontSendNotification);
-    oscDetuneLbl_.setJustificationType (juce::Justification::centred);
+    addAndMakeVisible (oscTuneKnob_);    addAndMakeVisible (oscTuneLbl_);
+    addAndMakeVisible (oscDetuneKnob_);  addAndMakeVisible (oscDetuneLbl_);
+    setupKnob (oscTuneKnob_,   oscTuneLbl_,   "Tune");
+    setupKnob (oscDetuneKnob_, oscDetuneLbl_, "Detune");
+    oscTuneAtt_    = std::make_unique<SliderAttachment> (proc_.apvts, "osc_tune",    oscTuneKnob_);
+    oscDetuneAtt_  = std::make_unique<SliderAttachment> (proc_.apvts, "osc_detune",  oscDetuneKnob_);
 
     // Filter — mode selector
     filterModeBox_.addItem ("Low Pass",  1);
@@ -61,69 +59,51 @@ PM0AudioProcessorEditor::PM0AudioProcessorEditor (PM0AudioProcessor& p)
     filterModeLbl_.setText ("Mode", juce::dontSendNotification);
     filterModeLbl_.setJustificationType (juce::Justification::centred);
 
-    addAndMakeVisible (filterCutoffKnob_);
-    filterCutoffKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    filterCutoffKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
-    filterCutoffAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "filter_cutoff", filterCutoffKnob_);
+    addAndMakeVisible (filterCutoffKnob_);    addAndMakeVisible (filterCutoffLbl_);
+    addAndMakeVisible (filterResonanceKnob_); addAndMakeVisible (filterResonanceLbl_);
+    setupKnob (filterCutoffKnob_,    filterCutoffLbl_,    "Cutoff");
+    setupKnob (filterResonanceKnob_, filterResonanceLbl_, "Resonance");
+    filterCutoffAtt_    = std::make_unique<SliderAttachment> (proc_.apvts, "filter_cutoff",     filterCutoffKnob_);
+    filterResonanceAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "filter_resonance",  filterResonanceKnob_);
 
-    addAndMakeVisible (filterCutoffLbl_);
-    filterCutoffLbl_.setText ("Cutoff", juce::dontSendNotification);
-    filterCutoffLbl_.setJustificationType (juce::Justification::centred);
+    // Volume Envelope
+    addAndMakeVisible (envAttackKnob_);   addAndMakeVisible (envAttackLbl_);
+    addAndMakeVisible (envDecayKnob_);    addAndMakeVisible (envDecayLbl_);
+    addAndMakeVisible (envSustainKnob_);  addAndMakeVisible (envSustainLbl_);
+    addAndMakeVisible (envReleaseKnob_);  addAndMakeVisible (envReleaseLbl_);
+    setupKnob (envAttackKnob_,  envAttackLbl_,  "Attack");
+    setupKnob (envDecayKnob_,   envDecayLbl_,   "Decay");
+    setupKnob (envSustainKnob_, envSustainLbl_, "Sustain");
+    setupKnob (envReleaseKnob_, envReleaseLbl_, "Release");
+    envAttackAtt_  = std::make_unique<SliderAttachment> (proc_.apvts, "env_attack",   envAttackKnob_);
+    envDecayAtt_   = std::make_unique<SliderAttachment> (proc_.apvts, "env_decay",    envDecayKnob_);
+    envSustainAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "env_sustain",  envSustainKnob_);
+    envReleaseAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "env_release",  envReleaseKnob_);
 
-    addAndMakeVisible (filterResonanceKnob_);
-    filterResonanceKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    filterResonanceKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
-    filterResonanceAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "filter_resonance", filterResonanceKnob_);
+    envSustainBtn_.setClickingTogglesState (true);
+    addAndMakeVisible (envSustainBtn_);
+    envSustainBtnAtt_ = std::make_unique<ButtonAttachment> (proc_.apvts, "env_sustain_on", envSustainBtn_);
 
-    addAndMakeVisible (filterResonanceLbl_);
-    filterResonanceLbl_.setText ("Resonance", juce::dontSendNotification);
-    filterResonanceLbl_.setJustificationType (juce::Justification::centred);
-
-    // Envelope
-    addAndMakeVisible (envAttackKnob_);
-    envAttackKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    envAttackKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
-    envAttackAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "env_attack", envAttackKnob_);
-
-    addAndMakeVisible (envAttackLbl_);
-    envAttackLbl_.setText ("Attack", juce::dontSendNotification);
-    envAttackLbl_.setJustificationType (juce::Justification::centred);
-
-    addAndMakeVisible (envDecayKnob_);
-    envDecayKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    envDecayKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
-    envDecayAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "env_decay", envDecayKnob_);
-
-    addAndMakeVisible (envDecayLbl_);
-    envDecayLbl_.setText ("Decay", juce::dontSendNotification);
-    envDecayLbl_.setJustificationType (juce::Justification::centred);
-
-    addAndMakeVisible (envSustainKnob_);
-    envSustainKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    envSustainKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
-    envSustainAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "env_sustain", envSustainKnob_);
-
-    addAndMakeVisible (envSustainLbl_);
-    envSustainLbl_.setText ("Sustain", juce::dontSendNotification);
-    envSustainLbl_.setJustificationType (juce::Justification::centred);
-
-    addAndMakeVisible (envReleaseKnob_);
-    envReleaseKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    envReleaseKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
-    envReleaseAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "env_release", envReleaseKnob_);
-
-    addAndMakeVisible (envReleaseLbl_);
-    envReleaseLbl_.setText ("Release", juce::dontSendNotification);
-    envReleaseLbl_.setJustificationType (juce::Justification::centred);
-
-    addAndMakeVisible (envFilterModKnob_);
-    envFilterModKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    envFilterModKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
+    // Filter Envelope
+    addAndMakeVisible (fenvAttackKnob_);   addAndMakeVisible (fenvAttackLbl_);
+    addAndMakeVisible (fenvDecayKnob_);    addAndMakeVisible (fenvDecayLbl_);
+    addAndMakeVisible (fenvSustainKnob_);  addAndMakeVisible (fenvSustainLbl_);
+    addAndMakeVisible (fenvReleaseKnob_);  addAndMakeVisible (fenvReleaseLbl_);
+    addAndMakeVisible (envFilterModKnob_); addAndMakeVisible (envFilterModLbl_);
+    setupKnob (fenvAttackKnob_,  fenvAttackLbl_,  "Attack");
+    setupKnob (fenvDecayKnob_,   fenvDecayLbl_,   "Decay");
+    setupKnob (fenvSustainKnob_, fenvSustainLbl_, "Sustain");
+    setupKnob (fenvReleaseKnob_, fenvReleaseLbl_, "Release");
+    setupKnob (envFilterModKnob_, envFilterModLbl_, "Depth");
+    fenvAttackAtt_  = std::make_unique<SliderAttachment> (proc_.apvts, "fenv_attack",     fenvAttackKnob_);
+    fenvDecayAtt_   = std::make_unique<SliderAttachment> (proc_.apvts, "fenv_decay",      fenvDecayKnob_);
+    fenvSustainAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "fenv_sustain",    fenvSustainKnob_);
+    fenvReleaseAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "fenv_release",    fenvReleaseKnob_);
     envFilterModAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "env_filter_mod", envFilterModKnob_);
 
-    addAndMakeVisible (envFilterModLbl_);
-    envFilterModLbl_.setText ("Filter Mod", juce::dontSendNotification);
-    envFilterModLbl_.setJustificationType (juce::Justification::centred);
+    fenvSustainBtn_.setClickingTogglesState (true);
+    addAndMakeVisible (fenvSustainBtn_);
+    fenvSustainBtnAtt_ = std::make_unique<ButtonAttachment> (proc_.apvts, "fenv_sustain_on", fenvSustainBtn_);
 
     // LFO — target selector
     lfoTargetBox_.addItem ("Filter",    1);
@@ -136,33 +116,17 @@ PM0AudioProcessorEditor::PM0AudioProcessorEditor (PM0AudioProcessor& p)
     lfoTargetLbl_.setText ("LFO Target", juce::dontSendNotification);
     lfoTargetLbl_.setJustificationType (juce::Justification::centred);
 
-    addAndMakeVisible (lfoSpeedKnob_);
-    lfoSpeedKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    lfoSpeedKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
+    addAndMakeVisible (lfoSpeedKnob_); addAndMakeVisible (lfoSpeedLbl_);
+    addAndMakeVisible (lfoDepthKnob_); addAndMakeVisible (lfoDepthLbl_);
+    setupKnob (lfoSpeedKnob_, lfoSpeedLbl_, "LFO Speed");
+    setupKnob (lfoDepthKnob_, lfoDepthLbl_, "LFO Depth");
     lfoSpeedAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "lfo_speed", lfoSpeedKnob_);
-
-    addAndMakeVisible (lfoSpeedLbl_);
-    lfoSpeedLbl_.setText ("LFO Speed", juce::dontSendNotification);
-    lfoSpeedLbl_.setJustificationType (juce::Justification::centred);
-
-    addAndMakeVisible (lfoDepthKnob_);
-    lfoDepthKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    lfoDepthKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
     lfoDepthAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "lfo_depth", lfoDepthKnob_);
 
-    addAndMakeVisible (lfoDepthLbl_);
-    lfoDepthLbl_.setText ("LFO Depth", juce::dontSendNotification);
-    lfoDepthLbl_.setJustificationType (juce::Justification::centred);
-
     // Master
-    addAndMakeVisible (outputGainKnob_);
-    outputGainKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-    outputGainKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
+    addAndMakeVisible (outputGainKnob_); addAndMakeVisible (outputGainLbl_);
+    setupKnob (outputGainKnob_, outputGainLbl_, "Output Gain");
     outputGainAtt_ = std::make_unique<SliderAttachment> (proc_.apvts, "output_gain", outputGainKnob_);
-
-    addAndMakeVisible (outputGainLbl_);
-    outputGainLbl_.setText ("Output Gain", juce::dontSendNotification);
-    outputGainLbl_.setJustificationType (juce::Justification::centred);
 
     startTimer (30);
 }
@@ -188,6 +152,19 @@ void PM0AudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour (juce::Colours::white);
     g.setFont (10);
     g.drawText (juce::String (displayOutputPeak_, 1), meterArea.reduced (2), juce::Justification::centred);
+
+    // Section header labels
+    g.setFont (11.f);
+    g.setColour (juce::Colours::lightgrey.withAlpha (0.7f));
+    auto bounds   = getLocalBounds().withTrimmedTop (50);
+    auto area     = bounds.reduced (10);
+    int  secW[6]  = { 160, 160, 270, 270, 160, 80 };
+    const char* secNames[] = { "OSCILLATOR", "FILTER", "VOLUME ENV", "FILTER ENV", "LFO", "MASTER" };
+    for (int i = 0; i < 6; ++i)
+    {
+        auto sec = area.removeFromLeft (secW[i]);
+        g.drawText (secNames[i], sec.removeFromTop (14), juce::Justification::centred);
+    }
 }
 
 void PM0AudioProcessorEditor::resized()
@@ -198,81 +175,123 @@ void PM0AudioProcessorEditor::resized()
     auto presetArea = bounds.removeFromTop (50).reduced (5);
     presetLabel_.setBounds (presetArea.removeFromLeft (60));
     presetSelector_.setBounds (presetArea.removeFromLeft (300));
-    presetArea.removeFromLeft (8); // gap
+    presetArea.removeFromLeft (8);
     saveAsButton_.setBounds (presetArea.removeFromLeft (100));
-    presetArea.removeFromLeft (4); // gap
+    presetArea.removeFromLeft (4);
     deleteButton_.setBounds (presetArea.removeFromLeft (80));
 
     // Parameter controls in remaining space
-    auto area = bounds.reduced (10);
-    int knobSize = 70;
+    auto area       = bounds.reduced (10);
+    area.removeFromTop (14); // space for section headers painted in paint()
+    int knobSize    = 70;
     int labelHeight = 18;
+    int rowHeight   = knobSize + labelHeight + 12;
+    int btnHeight   = 28;
 
-    // Oscillator group (top left)
-    auto oscArea = area.removeFromLeft (180).reduced (5);
-    oscArea.removeFromTop (5);
+    // Helper: lay out 3 knobs side-by-side in a strip
+    auto placeKnobRow = [&] (juce::Rectangle<int> strip,
+                             juce::Slider& k1, juce::Label& l1,
+                             juce::Slider& k2, juce::Label& l2,
+                             juce::Slider& k3, juce::Label& l3)
+    {
+        int colW = strip.getWidth() / 3;
+        auto c1  = strip.removeFromLeft (colW);
+        auto c2  = strip.removeFromLeft (colW);
+        auto c3  = strip;
+        k1.setBounds (c1.removeFromTop (rowHeight).reduced (3));
+        l1.setBounds (c1.removeFromTop (labelHeight));
+        k2.setBounds (c2.removeFromTop (rowHeight).reduced (3));
+        l2.setBounds (c2.removeFromTop (labelHeight));
+        k3.setBounds (c3.removeFromTop (rowHeight).reduced (3));
+        l3.setBounds (c3.removeFromTop (labelHeight));
+    };
+
+    // ── Oscillator (160px) ──────────────────────────────────────────────
+    auto oscArea = area.removeFromLeft (160).reduced (5);
     oscWaveformLbl_.setBounds (oscArea.removeFromTop (labelHeight));
     oscWaveformBox_.setBounds (oscArea.removeFromTop (24).reduced (2));
     oscArea.removeFromTop (6);
-    oscTuneKnob_.setBounds (oscArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
-    oscTuneLbl_.setBounds (oscArea.removeFromTop (labelHeight));
-    oscDetuneKnob_.setBounds (oscArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
-    oscDetuneLbl_.setBounds (oscArea.removeFromTop (labelHeight));
+    oscTuneKnob_.setBounds   (oscArea.removeFromTop (rowHeight).reduced (3));
+    oscTuneLbl_.setBounds    (oscArea.removeFromTop (labelHeight));
+    oscDetuneKnob_.setBounds (oscArea.removeFromTop (rowHeight).reduced (3));
+    oscDetuneLbl_.setBounds  (oscArea.removeFromTop (labelHeight));
 
-    // Filter group
-    auto filterArea = area.removeFromLeft (180).reduced (5);
-    filterArea.removeFromTop (5);
-    filterModeLbl_.setBounds (filterArea.removeFromTop (labelHeight));
-    filterModeBox_.setBounds (filterArea.removeFromTop (24).reduced (2));
+    // ── Filter (160px) ──────────────────────────────────────────────────
+    auto filterArea = area.removeFromLeft (160).reduced (5);
+    filterModeLbl_.setBounds    (filterArea.removeFromTop (labelHeight));
+    filterModeBox_.setBounds    (filterArea.removeFromTop (24).reduced (2));
     filterArea.removeFromTop (6);
-    filterCutoffKnob_.setBounds (filterArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
-    filterCutoffLbl_.setBounds (filterArea.removeFromTop (labelHeight));
-    filterResonanceKnob_.setBounds (filterArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
-    filterResonanceLbl_.setBounds (filterArea.removeFromTop (labelHeight));
+    filterCutoffKnob_.setBounds    (filterArea.removeFromTop (rowHeight).reduced (3));
+    filterCutoffLbl_.setBounds     (filterArea.removeFromTop (labelHeight));
+    filterResonanceKnob_.setBounds (filterArea.removeFromTop (rowHeight).reduced (3));
+    filterResonanceLbl_.setBounds  (filterArea.removeFromTop (labelHeight));
 
-    // Envelope group (2x3 grid)
-    auto envArea = area.removeFromLeft (280).reduced (5);
-    envArea.removeFromTop (5);
+    // ── Volume Envelope (270px) ─────────────────────────────────────────
+    // Row 1: Attack, Decay, Sustain
+    // Row 2: Release, [spacer], [Sustain toggle button]
+    {
+        auto envArea = area.removeFromLeft (270).reduced (5);
 
-    auto row1 = envArea.removeFromTop (knobSize + labelHeight + 15);
-    auto col1 = row1.removeFromLeft (90);
-    auto col2 = row1.removeFromLeft (90);
-    auto col3 = row1;
+        auto row1 = envArea.removeFromTop (rowHeight + labelHeight + 4);
+        placeKnobRow (row1,
+                      envAttackKnob_,  envAttackLbl_,
+                      envDecayKnob_,   envDecayLbl_,
+                      envSustainKnob_, envSustainLbl_);
 
-    envAttackKnob_.setBounds (col1.removeFromTop (knobSize + labelHeight + 10).reduced (3));
-    envAttackLbl_.setBounds (col1.removeFromTop (labelHeight));
+        auto row2 = envArea.removeFromTop (rowHeight + labelHeight + 4);
+        int  colW = row2.getWidth() / 3;
+        auto c1   = row2.removeFromLeft (colW);
+        row2.removeFromLeft (colW); // spacer
+        auto c3   = row2;
 
-    envDecayKnob_.setBounds (col2.removeFromTop (knobSize + labelHeight + 10).reduced (3));
-    envDecayLbl_.setBounds (col2.removeFromTop (labelHeight));
+        envReleaseKnob_.setBounds (c1.removeFromTop (rowHeight).reduced (3));
+        envReleaseLbl_.setBounds  (c1.removeFromTop (labelHeight));
 
-    envSustainKnob_.setBounds (col3.removeFromTop (knobSize + labelHeight + 10).reduced (3));
-    envSustainLbl_.setBounds (col3.removeFromTop (labelHeight));
+        // Sustain toggle button: centred in c3
+        envSustainBtn_.setBounds (c3.withSizeKeepingCentre (80, btnHeight));
+    }
 
-    auto row2 = envArea.removeFromTop (knobSize + labelHeight + 15);
-    col1 = row2.removeFromLeft (90);
-    col2 = row2.removeFromLeft (90);
+    // ── Filter Envelope (270px) ─────────────────────────────────────────
+    // Row 1: Attack, Decay, Sustain
+    // Row 2: Release, Depth, [Sustain toggle button]
+    {
+        auto fenvArea = area.removeFromLeft (270).reduced (5);
 
-    envReleaseKnob_.setBounds (col1.removeFromTop (knobSize + labelHeight + 10).reduced (3));
-    envReleaseLbl_.setBounds (col1.removeFromTop (labelHeight));
+        auto row1 = fenvArea.removeFromTop (rowHeight + labelHeight + 4);
+        placeKnobRow (row1,
+                      fenvAttackKnob_,  fenvAttackLbl_,
+                      fenvDecayKnob_,   fenvDecayLbl_,
+                      fenvSustainKnob_, fenvSustainLbl_);
 
-    envFilterModKnob_.setBounds (col2.removeFromTop (knobSize + labelHeight + 10).reduced (3));
-    envFilterModLbl_.setBounds (col2.removeFromTop (labelHeight));
+        auto row2 = fenvArea.removeFromTop (rowHeight + labelHeight + 4);
+        int  colW = row2.getWidth() / 3;
+        auto c1   = row2.removeFromLeft (colW);
+        auto c2   = row2.removeFromLeft (colW);
+        auto c3   = row2;
 
-    // LFO group
-    auto lfoArea = area.removeFromLeft (180).reduced (5);
-    lfoArea.removeFromTop (5);
+        fenvReleaseKnob_.setBounds  (c1.removeFromTop (rowHeight).reduced (3));
+        fenvReleaseLbl_.setBounds   (c1.removeFromTop (labelHeight));
+        envFilterModKnob_.setBounds (c2.removeFromTop (rowHeight).reduced (3));
+        envFilterModLbl_.setBounds  (c2.removeFromTop (labelHeight));
+
+        // Sustain toggle button: centred in c3
+        fenvSustainBtn_.setBounds (c3.withSizeKeepingCentre (80, btnHeight));
+    }
+
+    // ── LFO (160px) ─────────────────────────────────────────────────────
+    auto lfoArea = area.removeFromLeft (160).reduced (5);
     lfoTargetLbl_.setBounds (lfoArea.removeFromTop (labelHeight));
     lfoTargetBox_.setBounds (lfoArea.removeFromTop (24).reduced (2));
     lfoArea.removeFromTop (6);
-    lfoSpeedKnob_.setBounds (lfoArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
-    lfoSpeedLbl_.setBounds (lfoArea.removeFromTop (labelHeight));
-    lfoDepthKnob_.setBounds (lfoArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
-    lfoDepthLbl_.setBounds (lfoArea.removeFromTop (labelHeight));
+    lfoSpeedKnob_.setBounds (lfoArea.removeFromTop (rowHeight).reduced (3));
+    lfoSpeedLbl_.setBounds  (lfoArea.removeFromTop (labelHeight));
+    lfoDepthKnob_.setBounds (lfoArea.removeFromTop (rowHeight).reduced (3));
+    lfoDepthLbl_.setBounds  (lfoArea.removeFromTop (labelHeight));
 
-    // Master (right side with meter)
+    // ── Master (remaining, minus 50px meter on far right) ────────────────
     auto masterArea = area;
-    outputGainKnob_.setBounds (masterArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
-    outputGainLbl_.setBounds (masterArea.removeFromTop (labelHeight));
+    outputGainKnob_.setBounds (masterArea.removeFromTop (rowHeight).reduced (3));
+    outputGainLbl_.setBounds  (masterArea.removeFromTop (labelHeight));
 }
 
 void PM0AudioProcessorEditor::timerCallback()
@@ -314,7 +333,6 @@ void PM0AudioProcessorEditor::updatePresetList()
     int currentIndex = pm->getCurrentPresetIndex();
     presetSelector_.setSelectedItemIndex (currentIndex, juce::dontSendNotification);
 
-    // Disable delete for factory presets (indices 0-23)
     bool isFactory = (currentIndex >= 0 && currentIndex < static_cast<int> (presets.size()))
                      ? presets[static_cast<size_t> (currentIndex)].isFactory
                      : true;
@@ -327,7 +345,6 @@ void PM0AudioProcessorEditor::onPresetSelected()
     if (selectedIndex >= 0)
         proc_.setCurrentProgram (selectedIndex);
 
-    // Refresh delete button enable state
     auto* pm = proc_.getPresetManager();
     if (pm == nullptr)
         return;
@@ -341,8 +358,6 @@ void PM0AudioProcessorEditor::onPresetSelected()
 
 void PM0AudioProcessorEditor::onSaveAsPressed()
 {
-    // AlertWindow::runModalLoop() is not permitted in JUCE 8 plugins.
-    // Use enterModalState with an async callback instead.
     auto* w = new juce::AlertWindow ("Save Preset As",
                                      "Enter preset name:",
                                      juce::AlertWindow::NoIcon);
@@ -366,7 +381,7 @@ void PM0AudioProcessorEditor::onSaveAsPressed()
                 }
             }
         }),
-        true /* deleteWhenDismissed */);
+        true);
 }
 
 void PM0AudioProcessorEditor::onDeletePressed()
@@ -381,7 +396,6 @@ void PM0AudioProcessorEditor::onDeletePressed()
     if (currentIndex < 0 || currentIndex >= static_cast<int> (presets.size()))
         return;
 
-    // Guard: never delete factory presets (belt-and-suspenders; button should be disabled)
     if (presets[static_cast<size_t> (currentIndex)].isFactory)
         return;
 

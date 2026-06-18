@@ -30,7 +30,14 @@ public:
     void setEnvelopeDecay (float decay) { envelope_.setDecay (decay); }
     void setEnvelopeSustain (float sustain) { envelope_.setSustain (sustain); }
     void setEnvelopeRelease (float release) { envelope_.setRelease (release); }
+    void setEnvelopeSustainEnabled (bool on) { envelope_.setSustainEnabled (on); }
     void setEnvelopeFilterMod (float mod) { envelopeFilterMod_ = mod; }
+    // Filter envelope (dedicated ADSR for filter cutoff modulation)
+    void setFEnvAttack  (float attack)  { fenv_.setAttack (attack); }
+    void setFEnvDecay   (float decay)   { fenv_.setDecay (decay); }
+    void setFEnvSustain (float sustain) { fenv_.setSustain (sustain); }
+    void setFEnvRelease (float release) { fenv_.setRelease (release); }
+    void setFEnvSustainEnabled (bool on) { fenv_.setSustainEnabled (on); }
     void setLFOSpeed (float speed) { lfo_.setSpeed (speed); }
     void setLFODepth (float depth) { lfoDepth_ = depth; }
     void setLFOTarget (int target) { lfoTarget_ = target; }
@@ -40,9 +47,10 @@ public:
 private:
     Oscillator oscillator_;
     Oscillator oscillator2_;
-    Filter filter_;
-    Envelope envelope_;
-    LFO lfo_;
+    Filter     filter_;
+    Envelope   envelope_;
+    Envelope   fenv_; // dedicated filter envelope
+    LFO        lfo_;
 
     bool isActive_ = false;
     int midiNoteNumber_ = -1;

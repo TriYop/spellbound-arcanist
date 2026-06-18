@@ -46,9 +46,15 @@ private:
     juce::Slider filterCutoffKnob_, filterResonanceKnob_;
     juce::Label  filterCutoffLbl_,  filterResonanceLbl_;
 
-    // Envelope controls
-    juce::Slider envAttackKnob_, envDecayKnob_, envSustainKnob_, envReleaseKnob_, envFilterModKnob_;
-    juce::Label  envAttackLbl_,  envDecayLbl_,  envSustainLbl_,  envReleaseLbl_,  envFilterModLbl_;
+    // Volume envelope controls
+    juce::Slider    envAttackKnob_, envDecayKnob_, envSustainKnob_, envReleaseKnob_;
+    juce::Label     envAttackLbl_,  envDecayLbl_,  envSustainLbl_,  envReleaseLbl_;
+    juce::TextButton envSustainBtn_ { "Sustain" };
+
+    // Filter envelope controls
+    juce::Slider    fenvAttackKnob_, fenvDecayKnob_, fenvSustainKnob_, fenvReleaseKnob_, envFilterModKnob_;
+    juce::Label     fenvAttackLbl_,  fenvDecayLbl_,  fenvSustainLbl_,  fenvReleaseLbl_,  envFilterModLbl_;
+    juce::TextButton fenvSustainBtn_ { "Sustain" };
 
     // LFO controls
     juce::ComboBox lfoTargetBox_;
@@ -65,15 +71,19 @@ private:
     // APVTS attachments
     using SliderAttachment   = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
+    using ButtonAttachment   = juce::AudioProcessorValueTreeState::ButtonAttachment;
 
     std::unique_ptr<ComboBoxAttachment> oscWaveformAtt_, filterModeAtt_, lfoTargetAtt_;
 
     std::unique_ptr<SliderAttachment>
         oscTuneAtt_, oscDetuneAtt_,
         filterCutoffAtt_, filterResonanceAtt_,
-        envAttackAtt_, envDecayAtt_, envSustainAtt_, envReleaseAtt_, envFilterModAtt_,
+        envAttackAtt_, envDecayAtt_, envSustainAtt_, envReleaseAtt_,
+        fenvAttackAtt_, fenvDecayAtt_, fenvSustainAtt_, fenvReleaseAtt_, envFilterModAtt_,
         lfoSpeedAtt_, lfoDepthAtt_,
         outputGainAtt_;
+
+    std::unique_ptr<ButtonAttachment> envSustainBtnAtt_, fenvSustainBtnAtt_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PM0AudioProcessorEditor)
 };

@@ -119,7 +119,13 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     float envDecay = *apvts.getRawParameterValue ("env_decay");
     float envSustain = *apvts.getRawParameterValue ("env_sustain");
     float envRelease = *apvts.getRawParameterValue ("env_release");
-    float envFilterMod = *apvts.getRawParameterValue ("env_filter_mod");
+    float envFilterMod     = *apvts.getRawParameterValue ("env_filter_mod");
+    bool  envSustainOn     = *apvts.getRawParameterValue ("env_sustain_on") > 0.5f;
+    float fenvAttack       = *apvts.getRawParameterValue ("fenv_attack");
+    float fenvDecay        = *apvts.getRawParameterValue ("fenv_decay");
+    float fenvSustain      = *apvts.getRawParameterValue ("fenv_sustain");
+    float fenvRelease      = *apvts.getRawParameterValue ("fenv_release");
+    bool  fenvSustainOn    = *apvts.getRawParameterValue ("fenv_sustain_on") > 0.5f;
     float lfoSpeed = *apvts.getRawParameterValue ("lfo_speed");
     float lfoDepth = *apvts.getRawParameterValue ("lfo_depth");
     float outputGain = *apvts.getRawParameterValue ("output_gain");
@@ -142,6 +148,12 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
         voice.setEnvelopeSustain (envSustain);
         voice.setEnvelopeRelease (envRelease);
         voice.setEnvelopeFilterMod (envFilterMod);
+        voice.setEnvelopeSustainEnabled (envSustainOn);
+        voice.setFEnvAttack  (fenvAttack);
+        voice.setFEnvDecay   (fenvDecay);
+        voice.setFEnvSustain (fenvSustain);
+        voice.setFEnvRelease (fenvRelease);
+        voice.setFEnvSustainEnabled (fenvSustainOn);
         voice.setLFOTarget (lfoTarget);
         voice.setLFOSpeed (lfoSpeed);
         voice.setLFODepth (lfoDepth);
@@ -265,7 +277,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PM0AudioProcessor::createPar
 
     // Envelope parameters
     params.push_back (std::make_unique<AudioParameterFloat>
-        ("env_attack", "Attack Time", 0.01f, 5.f, 0.1f));
+        ("env_attack", "Attack Time", 0.001f, 5.f, 0.1f));
 
     params.push_back (std::make_unique<AudioParameterFloat>
         ("env_decay", "Decay Time", 0.f, 5.f, 0.5f));
@@ -278,6 +290,26 @@ juce::AudioProcessorValueTreeState::ParameterLayout PM0AudioProcessor::createPar
 
     params.push_back (std::make_unique<AudioParameterFloat>
         ("env_filter_mod", "Filter Envelope Modulation", -100.f, 100.f, 0.f));
+
+    // Sustain bypass (ADSR ↔ ADR)
+    params.push_back (std::make_unique<AudioParameterBool>
+        ("env_sustain_on", "Amp Sustain On", true));
+
+    // Filter envelope (dedicated ADSR for filter cutoff)
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("fenv_attack",  "Filter Env Attack",  0.001f, 5.f,  0.001f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("fenv_decay",   "Filter Env Decay",   0.f,    5.f,  1.5f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("fenv_sustain", "Filter Env Sustain", 0.f,    1.f,  0.f));
+
+    params.push_back (std::make_unique<AudioParameterFloat>
+        ("fenv_release", "Filter Env Release", 0.001f, 10.f, 3.f));
+
+    params.push_back (std::make_unique<AudioParameterBool>
+        ("fenv_sustain_on", "Filter Sustain On", true));
 
     // LFO parameters
     params.push_back (std::make_unique<AudioParameterChoice>

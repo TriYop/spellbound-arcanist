@@ -15,4 +15,10 @@
   <PARAM id="lfo_depth" value="60"/>
   <PARAM id="lfo_target" value="1"/>
   <PARAM id="output_gain" value="-1"/>
+  <PARAM id="env_sustain_on" value="1"/>
+  <PARAM id="fenv_attack" value="0.001"/>
+  <PARAM id="fenv_decay" value="2.0"/>
+  <PARAM id="fenv_sustain" value="0.0"/>
+  <PARAM id="fenv_release" value="3.0"/>
+  <PARAM id="fenv_sustain_on" value="1"/>
 </Parameters>
