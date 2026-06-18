@@ -1,5 +1,6 @@
 #include "PresetManager.h"
 #include <juce_core/juce_core.h>
+#include <BinaryData.h>
 
 PresetManager::PresetManager (juce::AudioProcessorValueTreeState& apvts)
     : apvts_ (apvts)
@@ -173,10 +174,28 @@ bool PresetManager::loadPresetInternal (const PresetInfo& preset)
 
     if (preset.isFactory)
     {
-        // Load from embedded binary data (implemented in Task 3 after CMake setup)
-        // For now, placeholder: return false until binary data is available
-        // TODO: Replace with actual binary data loading
-        return false;
+        // Build the resource name from the preset index and name.
+        // Format: _NNN_PresetNameNoSpaces_xml
+        // e.g. index 0, "Celestial Drift" → "_001_CelestialDrift_xml"
+        juce::String paddedIndex = juce::String (preset.index + 1).paddedLeft ('0', 3);
+        juce::String nameNoSpaces = preset.name.removeCharacters (" ");
+        juce::String resourceName = "_" + paddedIndex + "_" + nameNoSpaces + "_xml";
+
+        int dataSize = 0;
+        const char* data = PM0_BinaryData::getNamedResource (resourceName.toRawUTF8(), dataSize);
+
+        if (data == nullptr || dataSize <= 0)
+        {
+            DBG ("PresetManager: binary resource not found: " + resourceName);
+            return false;
+        }
+
+        xmlElement = juce::parseXML (juce::String::fromUTF8 (data, dataSize));
+        if (!xmlElement)
+        {
+            DBG ("PresetManager: failed to parse factory preset XML: " + resourceName);
+            return false;
+        }
     }
     else
     {
