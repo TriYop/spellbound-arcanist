@@ -1,0 +1,11 @@
+build/
+build-release/
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.cmake.state
+cmake_install.cmake
+CTestTestfile.cmake
