@@ -23,6 +23,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(clap-juce-extensions)
 
+# Embed factory presets as binary data
+file(GLOB FACTORY_PRESET_FILES "Source/Presets/Factory/*.xml")
+juce_add_binary_data(PM0_BinaryData
+    HEADER_NAME BinaryData.h
+    NAMESPACE   PM0_BinaryData
+    SOURCES     ${FACTORY_PRESET_FILES}
+)
+
 set(PM0_FORMATS VST3 Standalone)
 if(APPLE)
     list(APPEND PM0_FORMATS AU)
@@ -66,6 +74,7 @@ target_compile_features(PM0 PUBLIC cxx_std_20)
 
 target_link_libraries(PM0
     PRIVATE
+        PM0_BinaryData
         juce::juce_audio_utils
         juce::juce_audio_plugin_client
         juce::juce_dsp
