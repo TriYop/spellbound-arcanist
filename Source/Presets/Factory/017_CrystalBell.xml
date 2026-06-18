@@ -14,25 +14,25 @@
   <PARAM id="lfo_speed" value="0.5"/>
   <PARAM id="lfo_depth" value="40"/>
   <PARAM id="lfo_target" value="0"/>
-  <PARAM id="output_gain" value="0"/>
+  <PARAM id="output_gain" value="-4"/>
   <PARAM id="env_sustain_on" value="1"/>
   <PARAM id="fenv_attack" value="0.001"/>
   <PARAM id="fenv_decay" value="2.0"/>
   <PARAM id="fenv_sustain" value="0.0"/>
   <PARAM id="fenv_release" value="3.0"/>
   <PARAM id="fenv_sustain_on" value="1"/>
-  <PARAM id="osc2_on" value="0"/>
-  <PARAM id="osc2_waveform" value="2"/>
-  <PARAM id="osc2_mult" value="1"/>
+  <PARAM id="osc2_on" value="1"/>
+  <PARAM id="osc2_waveform" value="0"/>
+  <PARAM id="osc2_mult" value="2"/>
   <PARAM id="osc2_phase" value="0"/>
-  <PARAM id="osc2_mix_mode" value="0"/>
-  <PARAM id="osc2_mix_depth" value="50"/>
-  <PARAM id="osc2_env_on" value="0"/>
-  <PARAM id="osc2_env_attack" value="0.1"/>
-  <PARAM id="osc2_env_decay" value="0.5"/>
-  <PARAM id="osc2_env_sustain" value="0.8"/>
-  <PARAM id="osc2_env_release" value="3.0"/>
-  <PARAM id="osc2_env_sus_on" value="1"/>
+  <PARAM id="osc2_mix_mode" value="1"/>
+  <PARAM id="osc2_mix_depth" value="65"/>
+  <PARAM id="osc2_env_on" value="1"/>
+  <PARAM id="osc2_env_attack" value="0.001"/>
+  <PARAM id="osc2_env_decay" value="1.5"/>
+  <PARAM id="osc2_env_sustain" value="0.0"/>
+  <PARAM id="osc2_env_release" value="2.5"/>
+  <PARAM id="osc2_env_sus_on" value="0"/>
   <PARAM id="osc2_flt_on" value="0"/>
   <PARAM id="osc2_flt_cutoff" value="4000"/>
   <PARAM id="osc2_flt_reso" value="0"/>
