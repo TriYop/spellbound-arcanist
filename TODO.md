@@ -2,12 +2,12 @@
 
 ## Synthesis
 
-- [ ] **Unison / second oscillator per voice** — add a second `Oscillator` per `Voice`, tuned at `+detune` / `-detune` cents relative to the first, panned L/R. This is what produces the classic thick pad sound through beating between the two oscillators.
+- [x] **Unison / second oscillator per voice** — two `Oscillator` instances per `Voice`, detuned at `+detune` / `-detune` cents respectively, mixed additively and normalized.
 
-- [ ] **LFO target selection** — add an `lfo_target` parameter (filter cutoff / amplitude / pitch). Currently the LFO only modulates filter cutoff. Tremolo (amplitude LFO) and vibrato (pitch LFO) are the two other essential pad motion types.
+- [x] **LFO target selection** — `lfo_target` parameter (Filter / Amplitude / Pitch). Filter modulates cutoff, Amplitude applies tremolo (±50% at full depth), Pitch applies vibrato (±50 cents at full depth). LFO rate bug also fixed (was running at 1/sampleRate rate instead of block rate).
 
-- [ ] **Filter mode** — add a `filter_mode` parameter (LP / BP / HP) and implement the corresponding biquad coefficient sets in `Filter`. Currently always low-pass.
+- [x] **Filter mode** — `filter_mode` parameter (Low Pass / Band Pass / High Pass) with correct RBJ biquad coefficients for each mode.
 
 ## UI
 
-- [ ] **Group controls visually** — the current flat layout of knobs needs grouping by section (Oscillator, Filter, Envelope, LFO, Master) with visual separators or panels. Needs design thinking before implementing: how to handle the added waveform ComboBox, future filter mode selector, and LFO target selector in the same space.
+- [ ] **Group controls visually** — the current flat layout of knobs needs grouping by section (Oscillator, Filter, Envelope, LFO, Master) with visual separators or panels. Needs design thinking before implementing.

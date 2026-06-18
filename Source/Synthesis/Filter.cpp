@@ -64,14 +64,26 @@ void Filter::updateCoefficients()
     float q = 0.5f + resonance_ * 3.5f;
     float alpha = sinWc / (2.f * q);
 
-    b0_ = (1.f - cosWc) / 2.f;
-    b1_ = 1.f - cosWc;
-    b2_ = (1.f - cosWc) / 2.f;
     float a0 = 1.f + alpha;
     a1_ = -2.f * cosWc / a0;
     a2_ = (1.f - alpha) / a0;
 
-    b0_ /= a0;
-    b1_ /= a0;
-    b2_ /= a0;
+    switch (mode_)
+    {
+        case Mode::LowPass:
+            b0_ = (1.f - cosWc) / 2.f / a0;
+            b1_ = (1.f - cosWc)       / a0;
+            b2_ = (1.f - cosWc) / 2.f / a0;
+            break;
+        case Mode::BandPass:
+            b0_ =  alpha / a0;
+            b1_ =  0.f;
+            b2_ = -alpha / a0;
+            break;
+        case Mode::HighPass:
+            b0_ =  (1.f + cosWc) / 2.f / a0;
+            b1_ = -(1.f + cosWc)       / a0;
+            b2_ =  (1.f + cosWc) / 2.f / a0;
+            break;
+    }
 }

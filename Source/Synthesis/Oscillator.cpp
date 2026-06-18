@@ -26,7 +26,7 @@ void Oscillator::process (juce::AudioBuffer<float>& buffer, int midiNote, float 
 
         for (int n = 0; n < buffer.getNumSamples(); ++n)
         {
-            samples[n] = generateSample (phase_);
+            samples[n] += generateSample (phase_);
 
             float phaseIncrement = baseFreq / static_cast<float> (sampleRate_);
             phase_ += phaseIncrement;

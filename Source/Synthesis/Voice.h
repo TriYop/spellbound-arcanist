@@ -21,7 +21,7 @@ public:
     bool isActive() const { return isActive_; }
     float getTimeSinceNoteOn() const { return timeSinceNoteOn_; }
 
-    void setWaveform (Oscillator::Waveform w) { oscillator_.setWaveform (w); }
+    void setWaveform (Oscillator::Waveform w) { oscillator_.setWaveform (w); oscillator2_.setWaveform (w); }
     void setOscillatorTune (float tune) { oscTune_ = tune; }
     void setOscillatorDetune (float detune) { oscDetune_ = detune; }
     void setFilterCutoff (float cutoff) { filterCutoff_ = cutoff; }
@@ -33,10 +33,13 @@ public:
     void setEnvelopeFilterMod (float mod) { envelopeFilterMod_ = mod; }
     void setLFOSpeed (float speed) { lfo_.setSpeed (speed); }
     void setLFODepth (float depth) { lfoDepth_ = depth; }
+    void setLFOTarget (int target) { lfoTarget_ = target; }
+    void setFilterMode (Filter::Mode m) { filter_.setMode (m); }
     void setOutputGain (float gain) { outputGain_ = gain; }
 
 private:
     Oscillator oscillator_;
+    Oscillator oscillator2_;
     Filter filter_;
     Envelope envelope_;
     LFO lfo_;
@@ -52,6 +55,7 @@ private:
     float filterResonance_ = 0.f;
     float envelopeFilterMod_ = 0.f;
     float lfoDepth_ = 0.f;
+    int   lfoTarget_ = 0; // 0=filter, 1=amplitude, 2=pitch
     float outputGain_ = 0.f;
 
     double sampleRate_ = 44100.0;

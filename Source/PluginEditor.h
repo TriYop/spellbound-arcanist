@@ -41,6 +41,8 @@ private:
     juce::Label  oscTuneLbl_,  oscDetuneLbl_;
 
     // Filter controls
+    juce::ComboBox filterModeBox_;
+    juce::Label    filterModeLbl_;
     juce::Slider filterCutoffKnob_, filterResonanceKnob_;
     juce::Label  filterCutoffLbl_,  filterResonanceLbl_;
 
@@ -49,6 +51,8 @@ private:
     juce::Label  envAttackLbl_,  envDecayLbl_,  envSustainLbl_,  envReleaseLbl_,  envFilterModLbl_;
 
     // LFO controls
+    juce::ComboBox lfoTargetBox_;
+    juce::Label    lfoTargetLbl_;
     juce::Slider lfoSpeedKnob_, lfoDepthKnob_;
     juce::Label  lfoSpeedLbl_,  lfoDepthLbl_;
 
@@ -62,7 +66,7 @@ private:
     using SliderAttachment   = juce::AudioProcessorValueTreeState::SliderAttachment;
     using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
 
-    std::unique_ptr<ComboBoxAttachment> oscWaveformAtt_;
+    std::unique_ptr<ComboBoxAttachment> oscWaveformAtt_, filterModeAtt_, lfoTargetAtt_;
 
     std::unique_ptr<SliderAttachment>
         oscTuneAtt_, oscDetuneAtt_,

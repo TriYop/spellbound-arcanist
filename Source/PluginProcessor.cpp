@@ -125,12 +125,16 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     float outputGain = *apvts.getRawParameterValue ("output_gain");
     auto waveform = static_cast<Oscillator::Waveform> (
         static_cast<int> (*apvts.getRawParameterValue ("osc_waveform")));
+    auto filterMode = static_cast<Filter::Mode> (
+        static_cast<int> (*apvts.getRawParameterValue ("filter_mode")));
+    int lfoTarget = static_cast<int> (*apvts.getRawParameterValue ("lfo_target"));
 
     for (auto& voice : voices_)
     {
         voice.setWaveform (waveform);
         voice.setOscillatorTune (oscTune);
         voice.setOscillatorDetune (oscDetune);
+        voice.setFilterMode (filterMode);
         voice.setFilterCutoff (filterCutoff);
         voice.setFilterResonance (filterResonance);
         voice.setEnvelopeAttack (envAttack);
@@ -138,6 +142,7 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
         voice.setEnvelopeSustain (envSustain);
         voice.setEnvelopeRelease (envRelease);
         voice.setEnvelopeFilterMod (envFilterMod);
+        voice.setLFOTarget (lfoTarget);
         voice.setLFOSpeed (lfoSpeed);
         voice.setLFODepth (lfoDepth);
         voice.setOutputGain (outputGain);
@@ -242,6 +247,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PM0AudioProcessor::createPar
         ("osc_detune", "Oscillator Detune", -50.f, 50.f, 0.f));
 
     // Filter parameters
+    params.push_back (std::make_unique<AudioParameterChoice>
+        ("filter_mode", "Filter Mode",
+         StringArray { "Low Pass", "Band Pass", "High Pass" }, 0));
+
     params.push_back (std::make_unique<AudioParameterFloat>
         ("filter_cutoff", "Filter Cutoff", 20.f, 20000.f, 4000.f));
 
@@ -265,6 +274,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PM0AudioProcessor::createPar
         ("env_filter_mod", "Filter Envelope Modulation", -100.f, 100.f, 0.f));
 
     // LFO parameters
+    params.push_back (std::make_unique<AudioParameterChoice>
+        ("lfo_target", "LFO Target",
+         StringArray { "Filter", "Amplitude", "Pitch" }, 0));
+
     params.push_back (std::make_unique<AudioParameterFloat>
         ("lfo_speed", "LFO Speed", 0.1f, 10.f, 0.5f));
 

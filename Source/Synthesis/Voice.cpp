@@ -14,9 +14,10 @@ void Voice::prepare (double sampleRate, int samplesPerBlock, double tailLength)
     samplesPerBlock_ = samplesPerBlock;
 
     oscillator_.prepare (sampleRate);
+    oscillator2_.prepare (sampleRate);
     filter_.prepare (sampleRate);
     envelope_.prepare (sampleRate, tailLength);
-    lfo_.prepare (sampleRate);
+    lfo_.prepare (sampleRate, samplesPerBlock);
 
     voiceBuffer_.setSize (2, samplesPerBlock);
     voiceBuffer_.clear();
@@ -29,34 +30,39 @@ void Voice::process (juce::AudioBuffer<float>& buffer)
 
     voiceBuffer_.clear();
 
-    // Generate oscillator signal
-    oscillator_.process (voiceBuffer_, midiNoteNumber_, oscTune_, oscDetune_);
+    float lfoValue = lfo_.process(); // -1 to +1
 
-    // Update filter cutoff with envelope modulation and LFO
+    // Pitch LFO: ±50 cents at full depth
+    float pitchMod = (lfoTarget_ == 2 && lfoDepth_ > 0.1f)
+                   ? lfoValue * lfoDepth_ * 0.5f
+                   : 0.f;
+
+    // Two oscillators detuned in opposite directions; normalize combined output
+    oscillator_.process  (voiceBuffer_, midiNoteNumber_, oscTune_ + pitchMod,  oscDetune_);
+    oscillator2_.process (voiceBuffer_, midiNoteNumber_, oscTune_ + pitchMod, -oscDetune_);
+    voiceBuffer_.applyGain (0.5f);
+
+    // Filter modulation (envelope + LFO when target is filter)
     float envValue = envelope_.getCurrentLevel();
-    float lfoValue = lfo_.process();
-
     float filterCutoffModulated = filterCutoff_;
 
-    // Apply envelope modulation (convert cents to ratio)
     if (std::abs (envelopeFilterMod_) > 0.1f)
         filterCutoffModulated *= std::pow (2.f, envelopeFilterMod_ * envValue / 1200.f);
 
-    // Apply LFO modulation
-    if (lfoDepth_ > 0.1f)
+    if (lfoTarget_ == 0 && lfoDepth_ > 0.1f)
         filterCutoffModulated *= (1.f + lfoValue * lfoDepth_ * 0.1f);
 
-    filterCutoffModulated = juce::jlimit (20.f, 20000.f, filterCutoffModulated);
-
-    filter_.setCutoff (filterCutoffModulated);
+    filter_.setCutoff (juce::jlimit (20.f, 20000.f, filterCutoffModulated));
     filter_.setResonance (filterResonance_);
     filter_.process (voiceBuffer_);
 
-    // Apply envelope
+    // Envelope
     envelope_.process (voiceBuffer_);
 
-    // Apply velocity and output gain
+    // Output gain + amplitude LFO (tremolo)
     float gainLinear = velocity_ * juce::Decibels::decibelsToGain (outputGain_);
+    if (lfoTarget_ == 1 && lfoDepth_ > 0.1f)
+        gainLinear *= (1.f + lfoValue * lfoDepth_ * 0.005f);
     voiceBuffer_.applyGain (gainLinear);
 
     // Mix to output buffer

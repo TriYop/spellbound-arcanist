@@ -4,6 +4,8 @@
 class Filter
 {
 public:
+    enum class Mode { LowPass, BandPass, HighPass };
+
     Filter();
     ~Filter();
 
@@ -12,10 +14,12 @@ public:
 
     void setCutoff (float cutoff);
     void setResonance (float resonance);
+    void setMode (Mode m) { mode_ = m; updateCoefficients(); }
 
 private:
     void updateCoefficients();
 
+    Mode   mode_ = Mode::LowPass;
     double sampleRate_ = 44100.0;
     float cutoff_ = 4000.f;
     float resonance_ = 0.f;

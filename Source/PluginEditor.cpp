@@ -50,7 +50,17 @@ PM0AudioProcessorEditor::PM0AudioProcessorEditor (PM0AudioProcessor& p)
     oscDetuneLbl_.setText ("Detune", juce::dontSendNotification);
     oscDetuneLbl_.setJustificationType (juce::Justification::centred);
 
-    // Filter
+    // Filter — mode selector
+    filterModeBox_.addItem ("Low Pass",  1);
+    filterModeBox_.addItem ("Band Pass", 2);
+    filterModeBox_.addItem ("High Pass", 3);
+    addAndMakeVisible (filterModeBox_);
+    filterModeAtt_ = std::make_unique<ComboBoxAttachment> (proc_.apvts, "filter_mode", filterModeBox_);
+
+    addAndMakeVisible (filterModeLbl_);
+    filterModeLbl_.setText ("Mode", juce::dontSendNotification);
+    filterModeLbl_.setJustificationType (juce::Justification::centred);
+
     addAndMakeVisible (filterCutoffKnob_);
     filterCutoffKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
     filterCutoffKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
@@ -115,7 +125,17 @@ PM0AudioProcessorEditor::PM0AudioProcessorEditor (PM0AudioProcessor& p)
     envFilterModLbl_.setText ("Filter Mod", juce::dontSendNotification);
     envFilterModLbl_.setJustificationType (juce::Justification::centred);
 
-    // LFO
+    // LFO — target selector
+    lfoTargetBox_.addItem ("Filter",    1);
+    lfoTargetBox_.addItem ("Amplitude", 2);
+    lfoTargetBox_.addItem ("Pitch",     3);
+    addAndMakeVisible (lfoTargetBox_);
+    lfoTargetAtt_ = std::make_unique<ComboBoxAttachment> (proc_.apvts, "lfo_target", lfoTargetBox_);
+
+    addAndMakeVisible (lfoTargetLbl_);
+    lfoTargetLbl_.setText ("LFO Target", juce::dontSendNotification);
+    lfoTargetLbl_.setJustificationType (juce::Justification::centred);
+
     addAndMakeVisible (lfoSpeedKnob_);
     lfoSpeedKnob_.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
     lfoSpeedKnob_.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 50, 20);
@@ -202,6 +222,9 @@ void PM0AudioProcessorEditor::resized()
     // Filter group
     auto filterArea = area.removeFromLeft (180).reduced (5);
     filterArea.removeFromTop (5);
+    filterModeLbl_.setBounds (filterArea.removeFromTop (labelHeight));
+    filterModeBox_.setBounds (filterArea.removeFromTop (24).reduced (2));
+    filterArea.removeFromTop (6);
     filterCutoffKnob_.setBounds (filterArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
     filterCutoffLbl_.setBounds (filterArea.removeFromTop (labelHeight));
     filterResonanceKnob_.setBounds (filterArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
@@ -238,6 +261,9 @@ void PM0AudioProcessorEditor::resized()
     // LFO group
     auto lfoArea = area.removeFromLeft (180).reduced (5);
     lfoArea.removeFromTop (5);
+    lfoTargetLbl_.setBounds (lfoArea.removeFromTop (labelHeight));
+    lfoTargetBox_.setBounds (lfoArea.removeFromTop (24).reduced (2));
+    lfoArea.removeFromTop (6);
     lfoSpeedKnob_.setBounds (lfoArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));
     lfoSpeedLbl_.setBounds (lfoArea.removeFromTop (labelHeight));
     lfoDepthKnob_.setBounds (lfoArea.removeFromTop (knobSize + labelHeight + 10).reduced (5));

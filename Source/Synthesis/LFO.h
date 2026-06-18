@@ -7,14 +7,14 @@ public:
     LFO();
     ~LFO();
 
-    void prepare (double sampleRate);
+    void prepare (double sampleRate, int samplesPerBlock);
 
     float process();
 
     void setSpeed (float hz) { speed_ = hz; }
 
 private:
-    double sampleRate_ = 44100.0;
+    double callRate_ = 86.13; // process() calls per second (sampleRate / samplesPerBlock)
     float speed_ = 0.5f;
     float phase_ = 0.f;
 

@@ -5,6 +5,7 @@
   <PARAM id="osc_detune" value="10"/>
   <PARAM id="filter_cutoff" value="2500"/>
   <PARAM id="filter_resonance" value="0.6"/>
+  <PARAM id="filter_mode" value="0"/>
   <PARAM id="env_attack" value="0.2"/>
   <PARAM id="env_decay" value="1.5"/>
   <PARAM id="env_sustain" value="0.7"/>
@@ -12,5 +13,6 @@
   <PARAM id="env_filter_mod" value="40"/>
   <PARAM id="lfo_speed" value="0.3"/>
   <PARAM id="lfo_depth" value="20"/>
+  <PARAM id="lfo_target" value="0"/>
   <PARAM id="output_gain" value="-2"/>
 </Parameters>
