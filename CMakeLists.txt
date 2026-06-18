@@ -60,6 +60,7 @@ target_sources(PM0 PRIVATE
     Source/Synthesis/Filter.cpp
     Source/Synthesis/Envelope.cpp
     Source/Synthesis/LFO.cpp
+    Source/UI/PM0LookAndFeel.cpp
 )
 
 target_compile_definitions(PM0 PUBLIC
