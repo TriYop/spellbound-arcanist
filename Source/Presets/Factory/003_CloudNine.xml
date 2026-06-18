@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<PARAMETERS version="1">
+<Parameters>
   <PARAM id="osc_tune" value="-3"/>
   <PARAM id="osc_detune" value="12"/>
   <PARAM id="filter_cutoff" value="4500"/>
@@ -12,4 +12,4 @@
   <PARAM id="lfo_speed" value="0.2"/>
   <PARAM id="lfo_depth" value="40"/>
   <PARAM id="output_gain" value="-3"/>
-</PARAMETERS>
+</Parameters>

@@ -30,7 +30,8 @@ juce::File PresetManager::getUserPresetsDirectory() const
     auto appData = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory);
     return appData.getChildFile ("PM0").getChildFile ("presets");
 #elif JUCE_MAC
-    auto appSupport = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory);
+    auto appSupport = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory)
+                                 .getChildFile ("Application Support");
     return appSupport.getChildFile ("PM0").getChildFile ("presets");
 #else // JUCE_LINUX
     auto home = juce::File::getSpecialLocation (juce::File::userHomeDirectory);
