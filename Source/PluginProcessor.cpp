@@ -113,10 +113,14 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // On preset change: release all held notes so the old sound fades to silence
+    // On preset change: start a 0.1 s output ramp to silence, then hard-kill voices
     if (allNotesOffPending.exchange (false))
+    {
         for (auto& voice : voices_)
             voice.noteOff();
+        fadeOutSamplesTotal_     = static_cast<int> (getSampleRate() * 0.1);
+        fadeOutSamplesRemaining_ = fadeOutSamplesTotal_;
+    }
 
     // Update all voice parameters from APVTS
     float oscTune = *apvts.getRawParameterValue ("osc_tune");
@@ -271,6 +275,27 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     for (auto& voice : voices_)
     {
         voice.process (buffer);
+    }
+
+    // Apply 0.1 s fade-out ramp; hard-kill voices when it reaches zero
+    if (fadeOutSamplesRemaining_ > 0)
+    {
+        const float totalF   = static_cast<float> (fadeOutSamplesTotal_);
+        const int   numCh    = buffer.getNumChannels();
+        const int   numSamps = buffer.getNumSamples();
+
+        for (int n = 0; n < numSamps; ++n)
+        {
+            const float gain = fadeOutSamplesRemaining_ > 0
+                             ? static_cast<float> (fadeOutSamplesRemaining_--) / totalF
+                             : 0.f;
+            for (int ch = 0; ch < numCh; ++ch)
+                buffer.getWritePointer (ch)[n] *= gain;
+        }
+
+        if (fadeOutSamplesRemaining_ == 0)
+            for (auto& voice : voices_)
+                voice.forceStop();
     }
 
     // Measure output peak

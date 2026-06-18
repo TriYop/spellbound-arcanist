@@ -44,6 +44,10 @@ public:
     std::atomic<float> outputPeakDb       { -100.f };
     std::atomic<bool>  allNotesOffPending { false  };
 
+    // 0.1 s output ramp applied on preset change; only touched on audio thread
+    int fadeOutSamplesTotal_     = 0;
+    int fadeOutSamplesRemaining_ = 0;
+
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 

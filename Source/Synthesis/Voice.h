@@ -17,8 +17,9 @@ public:
     void prepare (double sampleRate, int samplesPerBlock, double tailLength);
     void process (juce::AudioBuffer<float>& buffer);
 
-    void noteOn  (int midiNoteNumber, float velocity);
-    void noteOff ();
+    void noteOn   (int midiNoteNumber, float velocity);
+    void noteOff  ();
+    void forceStop() { isActive_ = false; }  // hard-kill without release tail
 
     int   getNoteNumber    () const { return midiNoteNumber_; }
     bool  isActive         () const { return isActive_; }
