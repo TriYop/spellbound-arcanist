@@ -1,4 +1,4 @@
-# PM0 — Soft Pads and Drones Synthesizer
+# Arcanist — Soft Pads and Drones Synthesizer
 
 A modern JUCE-based polyphonic synthesizer plugin for creating lush, sustained pad sounds ranging from synthetic string textures to virtual choir atmospheres. Designed for ambient, cinematic, orchestral, and electronic music production.
 
@@ -25,7 +25,7 @@ A modern JUCE-based polyphonic synthesizer plugin for creating lush, sustained p
 
 ```bash
 # If using the AudioPlugins workspace:
-cd ~/Projects/AudioPlugins/PM0
+cd ~/Projects/AudioPlugins/Arcanist
 ```
 
 ### 2. **Build the Plugin**
@@ -53,20 +53,20 @@ For use in your DAW:
 ```
 
 Plugins are installed to:
-- **VST3**: `~/.vst3/PM0.vst3` or `/usr/lib/vst3/`
-- **CLAP**: `~/.clap/PM0.clap` or `/usr/lib/clap/`
-- **Standalone**: `~/.local/bin/PM0`
+- **VST3**: `~/.vst3/Arcanist.vst3` or `/usr/lib/vst3/`
+- **CLAP**: `~/.clap/Arcanist.clap` or `/usr/lib/clap/`
+- **Standalone**: `~/.local/bin/Arcanist`
 
 ### 4. **Launch Standalone**
 
 ```bash
-./build/PM0_artefacts/Debug/Standalone/PM0
+./build/Arcanist_artefacts/Debug/Standalone/Arcanist
 ```
 
 Or if installed:
 
 ```bash
-PM0
+Arcanist
 ```
 
 ---
@@ -102,8 +102,8 @@ sudo apt install cmake ninja-build build-essential git \
 ### **In a DAW** (e.g., Reaper, Ardour, Bitwig)
 
 1. **Add plugin** to a new track
-   - VST3: Instruments → PM0
-   - CLAP: Instruments → PM0
+   - VST3: Instruments → Arcanist
+   - CLAP: Instruments → Arcanist
 
 2. **Arm for MIDI** — ensure track receives MIDI input
 
@@ -113,7 +113,7 @@ sudo apt install cmake ninja-build build-essential git \
 
 ### **Standalone App**
 
-1. **Open PM0** — window appears with default settings
+1. **Open Arcanist** — window appears with default settings
 2. **Configure audio** — click "Options" → select audio device & sample rate
 3. **Play notes** — use your MIDI controller or on-screen keyboard (if available in future builds)
 
@@ -121,7 +121,7 @@ sudo apt install cmake ninja-build build-essential git \
 
 ## 🎚️ Understanding the Controls
 
-PM0 is organized into **6 logical sections**:
+Arcanist is organized into **6 logical sections**:
 
 ### **Oscillator** (Left)
 ```
@@ -228,7 +228,7 @@ Master:      Output Gain 0 dB
 ## 🎯 Tips for Best Results
 
 ### **Polyphony & Chord Playback**
-- PM0 supports 16 simultaneous notes. Play chords freely without worrying about voice limits.
+- Arcanist supports 16 simultaneous notes. Play chords freely without worrying about voice limits.
 - **Older notes are naturally released** if you exceed 16 notes (voice stealing).
 
 ### **Avoiding Clicks & Artifacts**
@@ -240,7 +240,7 @@ Master:      Output Gain 0 dB
 - 8 simultaneous voices ≈ 8% CPU usage — very efficient.
 
 ### **Mixing in Your DAW**
-- PM0 outputs in **stereo** (identical channels currently, stereo panning can be added in future versions).
+- Arcanist outputs in **stereo** (identical channels currently, stereo panning can be added in future versions).
 - Use track faders and EQ to blend with other instruments.
 - Consider adding reverb/delay on a send track for classic pad sound.
 
@@ -249,7 +249,7 @@ Master:      Output Gain 0 dB
 ## 📂 File Structure
 
 ```
-PM0/
+Arcanist/
 ├── README.md                 ← You are here
 ├── CLAUDE.md                 ← Developer documentation
 ├── CMakeLists.txt            ← Build configuration
@@ -266,10 +266,10 @@ PM0/
 │   ├── install.sh            ← Plugin installation helper
 │   └── uninstall.sh          ← Plugin removal
 └── build/                    ← Generated (after cmake build)
-    └── PM0_artefacts/
-        ├── VST3/PM0.vst3/    ← VST3 plugin
-        ├── CLAP/PM0.clap     ← CLAP plugin
-        └── Standalone/PM0    ← Standalone app
+    └── Arcanist_artefacts/
+        ├── VST3/Arcanist.vst3/    ← VST3 plugin
+        ├── CLAP/Arcanist.clap     ← CLAP plugin
+        └── Standalone/Arcanist    ← Standalone app
 ```
 
 ---

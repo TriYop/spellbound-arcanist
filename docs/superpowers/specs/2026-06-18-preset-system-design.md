@@ -1,11 +1,11 @@
-# PM0 Preset System Design
+# Arcanist Preset System Design
 
 **Date:** 2026-06-18  
 **Status:** Approved for implementation
 
 ## Overview
 
-PM0 will support a complete preset system allowing users to save, load, and organize synthesizer configurations. The system includes 24 factory presets organized by sonic character, unlimited user presets, and full integration with JUCE's program system for MIDI Program Change control and DAW compatibility.
+Arcanist will support a complete preset system allowing users to save, load, and organize synthesizer configurations. The system includes 24 factory presets organized by sonic character, unlimited user presets, and full integration with JUCE's program system for MIDI Program Change control and DAW compatibility.
 
 ## Requirements
 
@@ -14,7 +14,7 @@ PM0 will support a complete preset system allowing users to save, load, and orga
 - **UI control:** Preset selector at top of editor with save/load/delete workflow
 - **MIDI control:** Program Change messages switch presets
 - **DAW integration:** Compatible with host program change UI and automation
-- **Cross-platform:** Linux (`~/.config/PM0/presets/`), macOS (`~/Library/Application Support/PM0/presets/`), Windows (`%APPDATA%/PM0/presets/`)
+- **Cross-platform:** Linux (`~/.config/Arcanist/presets/`), macOS (`~/Library/Application Support/Arcanist/presets/`), Windows (`%APPDATA%/Arcanist/presets/`)
 
 ## Factory Preset Catalog (24 presets)
 

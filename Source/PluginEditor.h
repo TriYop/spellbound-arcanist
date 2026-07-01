@@ -2,17 +2,17 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "PluginProcessor.h"
-#include "UI/PM0LookAndFeel.h"
+#include "UI/ArcanistLookAndFeel.h"
 #include "UI/LedButton.h"
 
-class PM0AudioProcessorEditor final
+class ArcanistAudioProcessorEditor final
     : public juce::AudioProcessorEditor,
       private juce::Timer,
       private juce::Button::Listener
 {
 public:
-    explicit PM0AudioProcessorEditor (PM0AudioProcessor&);
-    ~PM0AudioProcessorEditor() override;
+    explicit ArcanistAudioProcessorEditor (ArcanistAudioProcessor&);
+    ~ArcanistAudioProcessorEditor() override;
 
     void paint   (juce::Graphics&) override;
     void resized () override;
@@ -32,8 +32,8 @@ private:
                        juce::Colour accent, bool dimmed = false) const;
 
     // ── Processor reference ───────────────────────────────────────────────────
-    PM0AudioProcessor& proc_;
-    PM0LookAndFeel     laf_;
+    ArcanistAudioProcessor& proc_;
+    ArcanistLookAndFeel     laf_;
 
     // ── Preset bar ────────────────────────────────────────────────────────────
     juce::Label      presetLabel_  { {}, "PRESET" };
@@ -62,12 +62,12 @@ private:
     // Volume envelope 1
     juce::Slider envAttackKnob_, envDecayKnob_, envSustainKnob_, envReleaseKnob_;
     juce::Label  envAttackLbl_,  envDecayLbl_,  envSustainLbl_,  envReleaseLbl_;
-    LedButton    envSustainBtn_ { "SUSTAIN", PM0Col::volEnv() };
+    LedButton    envSustainBtn_ { "SUSTAIN", ArcanistCol::volEnv() };
 
     // Filter envelope 1
     juce::Slider fenvAttackKnob_, fenvDecayKnob_, fenvSustainKnob_, fenvReleaseKnob_, envFilterModKnob_;
     juce::Label  fenvAttackLbl_,  fenvDecayLbl_,  fenvSustainLbl_,  fenvReleaseLbl_,  envFilterModLbl_;
-    LedButton    fenvSustainBtn_ { "SUSTAIN", PM0Col::fEnv() };
+    LedButton    fenvSustainBtn_ { "SUSTAIN", ArcanistCol::fEnv() };
 
     // LFO
     LedButton lfoTargetBtns_[3] {
@@ -86,7 +86,7 @@ private:
     // ══════════════════════════════════════════════════════════════════════════
 
     // Osc 2 oscillator
-    LedButton osc2OnBtn_           { "OSC 2 ON",  PM0Col::osc() };  // master bypass
+    LedButton osc2OnBtn_           { "OSC 2 ON",  ArcanistCol::osc() };  // master bypass
     LedButton osc2WaveformBtns_[5] {
         LedButton{"SINE"}, LedButton{"TRI"}, LedButton{"SAW"}, LedButton{"SQR"}, LedButton{"NOISE"}
     };
@@ -104,13 +104,13 @@ private:
     juce::Label  osc2MixDepthLbl_;
 
     // Vol envelope 2
-    LedButton    osc2EnvOnBtn_    { "ENV ON",  PM0Col::volEnv() };
+    LedButton    osc2EnvOnBtn_    { "ENV ON",  ArcanistCol::volEnv() };
     juce::Slider osc2EnvAtkKnob_, osc2EnvDecKnob_, osc2EnvSusKnob_, osc2EnvRelKnob_;
     juce::Label  osc2EnvAtkLbl_,  osc2EnvDecLbl_,  osc2EnvSusLbl_,  osc2EnvRelLbl_;
-    LedButton    osc2EnvSusBtn_   { "SUSTAIN", PM0Col::volEnv() };
+    LedButton    osc2EnvSusBtn_   { "SUSTAIN", ArcanistCol::volEnv() };
 
     // Filter 2
-    LedButton osc2FltOnBtn_      { "FILT ON", PM0Col::filter() };
+    LedButton osc2FltOnBtn_      { "FILT ON", ArcanistCol::filter() };
     LedButton osc2FltModeBtns_[3] {
         LedButton{"LP"}, LedButton{"BP"}, LedButton{"HP"}
     };
@@ -120,7 +120,7 @@ private:
     // Filter envelope 2
     juce::Slider osc2FenvAtkKnob_, osc2FenvDecKnob_, osc2FenvSusKnob_, osc2FenvRelKnob_, osc2FenvDepthKnob_;
     juce::Label  osc2FenvAtkLbl_,  osc2FenvDecLbl_,  osc2FenvSusLbl_,  osc2FenvRelLbl_,  osc2FenvDepthLbl_;
-    LedButton    osc2FenvSusBtn_  { "SUSTAIN", PM0Col::fEnv() };
+    LedButton    osc2FenvSusBtn_  { "SUSTAIN", ArcanistCol::fEnv() };
 
     // ── Section layout rects ──────────────────────────────────────────────────
     // Row 1
@@ -154,5 +154,5 @@ private:
         osc2FltCutAtt_, osc2FltResoAtt_,
         osc2FenvAtkAtt_, osc2FenvDecAtt_, osc2FenvSusKnobAtt_, osc2FenvRelAtt_, osc2FenvDepthAtt_;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PM0AudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArcanistAudioProcessorEditor)
 };

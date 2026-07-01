@@ -1,7 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-PM0AudioProcessor::PM0AudioProcessor()
+ArcanistAudioProcessor::ArcanistAudioProcessor()
     : AudioProcessor (BusesProperties()
         .withOutput ("Output", juce::AudioChannelSet::stereo(), true))
     , apvts (*this, nullptr, "Parameters", createParameterLayout())
@@ -9,36 +9,36 @@ PM0AudioProcessor::PM0AudioProcessor()
 {
 }
 
-PM0AudioProcessor::~PM0AudioProcessor()
+ArcanistAudioProcessor::~ArcanistAudioProcessor()
 {
 }
 
-const juce::String PM0AudioProcessor::getName() const
+const juce::String ArcanistAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool PM0AudioProcessor::acceptsMidi() const
+bool ArcanistAudioProcessor::acceptsMidi() const
 {
     return true;
 }
 
-bool PM0AudioProcessor::producesMidi() const
+bool ArcanistAudioProcessor::producesMidi() const
 {
     return false;
 }
 
-bool PM0AudioProcessor::isMidiEffect() const
+bool ArcanistAudioProcessor::isMidiEffect() const
 {
     return false;
 }
 
-double PM0AudioProcessor::getTailLengthSeconds() const
+double ArcanistAudioProcessor::getTailLengthSeconds() const
 {
     return 3.0; // Allow tail time for sustaining pads
 }
 
-int PM0AudioProcessor::getNumPrograms()
+int ArcanistAudioProcessor::getNumPrograms()
 {
     if (presetManager_)
     {
@@ -48,14 +48,14 @@ int PM0AudioProcessor::getNumPrograms()
     return 24; // Minimum: factory presets
 }
 
-int PM0AudioProcessor::getCurrentProgram()
+int ArcanistAudioProcessor::getCurrentProgram()
 {
     if (presetManager_)
         return presetManager_->getCurrentPresetIndex();
     return 0;
 }
 
-void PM0AudioProcessor::setCurrentProgram (int index)
+void ArcanistAudioProcessor::setCurrentProgram (int index)
 {
     if (presetManager_)
     {
@@ -64,7 +64,7 @@ void PM0AudioProcessor::setCurrentProgram (int index)
     }
 }
 
-const juce::String PM0AudioProcessor::getProgramName (int index)
+const juce::String ArcanistAudioProcessor::getProgramName (int index)
 {
     if (presetManager_)
     {
@@ -75,13 +75,13 @@ const juce::String PM0AudioProcessor::getProgramName (int index)
     return {};
 }
 
-void PM0AudioProcessor::changeProgramName (int index, const juce::String& newName)
+void ArcanistAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
     if (presetManager_)
         presetManager_->renamePreset (index, newName);
 }
 
-void PM0AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void ArcanistAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     voices_.clear();
     voices_.resize (16); // Polyphony of 16
@@ -90,12 +90,12 @@ void PM0AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
         voice.prepare (sampleRate, samplesPerBlock, getTailLengthSeconds());
 }
 
-void PM0AudioProcessor::releaseResources()
+void ArcanistAudioProcessor::releaseResources()
 {
     voices_.clear();
 }
 
-bool PM0AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool ArcanistAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
         && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
@@ -104,7 +104,7 @@ bool PM0AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) cons
     return true;
 }
 
-void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void ArcanistAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -306,24 +306,24 @@ void PM0AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     outputPeakDb.store (juce::Decibels::gainToDecibels (peakLevel, -100.f), std::memory_order_relaxed);
 }
 
-bool PM0AudioProcessor::hasEditor() const
+bool ArcanistAudioProcessor::hasEditor() const
 {
     return true;
 }
 
-juce::AudioProcessorEditor* PM0AudioProcessor::createEditor()
+juce::AudioProcessorEditor* ArcanistAudioProcessor::createEditor()
 {
-    return new PM0AudioProcessorEditor (*this);
+    return new ArcanistAudioProcessorEditor (*this);
 }
 
-void PM0AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void ArcanistAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = apvts.state;
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
     copyXmlToBinary (*xml, destData);
 }
 
-void PM0AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void ArcanistAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
@@ -332,7 +332,7 @@ void PM0AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
             apvts.replaceState (juce::ValueTree::fromXml (*xmlState));
 }
 
-juce::AudioProcessorValueTreeState::ParameterLayout PM0AudioProcessor::createParameterLayout()
+juce::AudioProcessorValueTreeState::ParameterLayout ArcanistAudioProcessor::createParameterLayout()
 {
     using namespace juce;
 
@@ -490,5 +490,5 @@ juce::AudioProcessorValueTreeState::ParameterLayout PM0AudioProcessor::createPar
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new PM0AudioProcessor();
+    return new ArcanistAudioProcessor();
 }

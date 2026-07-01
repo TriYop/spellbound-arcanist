@@ -1,6 +1,6 @@
 #pragma once
 #include <juce_gui_basics/juce_gui_basics.h>
-#include "PM0LookAndFeel.h"
+#include "ArcanistLookAndFeel.h"
 
 // ── LedButton ─────────────────────────────────────────────────────────────────
 // A TextButton rendered as a hardware LED push-button:
@@ -12,7 +12,7 @@ class LedButton : public juce::TextButton
 {
 public:
     explicit LedButton (const juce::String& label,
-                        juce::Colour led = PM0Col::ledOn())
+                        juce::Colour led = ArcanistCol::ledOn())
         : juce::TextButton (label), ledColour_ (led) {}
 
     void setLedColour (juce::Colour c) { ledColour_ = c; repaint(); }
@@ -33,8 +33,8 @@ public:
         g.fillRoundedRectangle (bounds, 3.f);
 
         // ── Border ────────────────────────────────────────────────────────
-        juce::Colour borderCol = on ? PM0Col::panelBorder().brighter (0.3f)
-                                    : PM0Col::panelBorder();
+        juce::Colour borderCol = on ? ArcanistCol::panelBorder().brighter (0.3f)
+                                    : ArcanistCol::panelBorder();
         g.setColour (borderCol);
         g.drawRoundedRectangle (bounds.reduced (0.5f), 3.f, 0.8f);
 
@@ -59,7 +59,7 @@ public:
         }
         else
         {
-            g.setColour (PM0Col::ledOff());
+            g.setColour (ArcanistCol::ledOff());
             g.fillEllipse (ledRect);
             g.setColour (juce::Colour (0xFF1A2A1A));
             g.drawEllipse (ledRect.expanded (0.3f), 0.5f);
@@ -67,7 +67,7 @@ public:
 
         // ── Label text ────────────────────────────────────────────────────
         float textX = ledX + ledD + 6.f;
-        g.setColour (on ? PM0Col::textPrimary() : PM0Col::textDim().brighter (0.4f));
+        g.setColour (on ? ArcanistCol::textPrimary() : ArcanistCol::textDim().brighter (0.4f));
         g.setFont (juce::Font (juce::FontOptions{}.withHeight (10.5f).withStyle ("Bold")));
         g.drawText (getButtonText(),
                     juce::Rectangle<float> (textX, 0.f,

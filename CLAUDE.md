@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-PM0 is a JUCE audio synthesizer plugin (VST3 / CLAP / Standalone) designed for generating soft pads and drones. The plugin synthesizes rich, sustained pad sounds ranging from synthetic string textures to virtual choir atmospheres, targeting ambient, cinematic, and orchestral production workflows. Example sonic targets: Vangelis and Enya-style sustained chords.
+Arcanist is a JUCE audio synthesizer plugin (VST3 / CLAP / Standalone) designed for generating soft pads and drones. The plugin synthesizes rich, sustained pad sounds ranging from synthetic string textures to virtual choir atmospheres, targeting ambient, cinematic, and orchestral production workflows. Example sonic targets: Vangelis and Enya-style sustained chords.
 
 ## Build Commands
 
@@ -31,22 +31,22 @@ First run downloads JUCE and clap-juce-extensions into `build/_deps/`.
 
 ```bash
 cmake --build build --parallel              # all targets
-cmake --build build --target PM0_Standalone # standalone only
-cmake --build build --target PM0_VST3       # VST3 only
-cmake --build build --target PM0_CLAP       # CLAP only
+cmake --build build --target Arcanist_Standalone # standalone only
+cmake --build build --target Arcanist_VST3       # VST3 only
+cmake --build build --target Arcanist_CLAP       # CLAP only
 ```
 
 ### Run standalone
 
 ```bash
-./build/PM0_artefacts/Debug/Standalone/PM0
+./build/Arcanist_artefacts/Debug/Standalone/Arcanist
 ```
 
 ### Install plugins (Linux, dev build)
 
 ```bash
-cp -r build/PM0_artefacts/Debug/VST3/PM0.vst3 ~/.vst3/
-cp    build/PM0_artefacts/Debug/CLAP/PM0.clap ~/.clap/
+cp -r build/Arcanist_artefacts/Debug/VST3/Arcanist.vst3 ~/.vst3/
+cp    build/Arcanist_artefacts/Debug/CLAP/Arcanist.clap ~/.clap/
 ```
 
 ### Create shippable tarball

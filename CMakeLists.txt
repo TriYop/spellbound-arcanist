@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(PM0 VERSION 0.1.0)
+project(Arcanist VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,24 +25,24 @@ FetchContent_MakeAvailable(clap-juce-extensions)
 
 # Embed factory presets as binary data
 file(GLOB FACTORY_PRESET_FILES "Source/Presets/Factory/*.xml")
-juce_add_binary_data(PM0_BinaryData
+juce_add_binary_data(Arcanist_BinaryData
     HEADER_NAME BinaryData.h
-    NAMESPACE   PM0_BinaryData
+    NAMESPACE   Arcanist_BinaryData
     SOURCES     ${FACTORY_PRESET_FILES}
 )
 
-set(PM0_FORMATS VST3 Standalone)
+set(Arcanist_FORMATS VST3 Standalone)
 if(APPLE)
-    list(APPEND PM0_FORMATS AU)
+    list(APPEND Arcanist_FORMATS AU)
 endif()
 
-juce_add_plugin(PM0
-    COMPANY_NAME                "YvanJanet"
-    PLUGIN_MANUFACTURER_CODE    Yjnt
-    PLUGIN_CODE                 PM0P
-    FORMATS                     ${PM0_FORMATS}
-    PRODUCT_NAME                "PM0"
-    BUNDLE_ID                   "com.yvanjanet.pm0"
+juce_add_plugin(Arcanist
+    COMPANY_NAME                "spellbound"
+    PLUGIN_MANUFACTURER_CODE    Spbd
+    PLUGIN_CODE                 Arcn
+    FORMATS                     ${Arcanist_FORMATS}
+    PRODUCT_NAME                "Arcanist"
+    BUNDLE_ID                   "com.spellbound.arcanist"
     IS_SYNTH                    TRUE
     NEEDS_MIDI_INPUT            TRUE
     NEEDS_MIDI_OUTPUT           FALSE
@@ -51,7 +51,7 @@ juce_add_plugin(PM0
     DESCRIPTION                 "Soft pads and drones synthesizer"
 )
 
-target_sources(PM0 PRIVATE
+target_sources(Arcanist PRIVATE
     Source/PluginProcessor.cpp
     Source/PluginEditor.cpp
     Source/PresetManager.cpp
@@ -60,22 +60,22 @@ target_sources(PM0 PRIVATE
     Source/Synthesis/Filter.cpp
     Source/Synthesis/Envelope.cpp
     Source/Synthesis/LFO.cpp
-    Source/UI/PM0LookAndFeel.cpp
+    Source/UI/ArcanistLookAndFeel.cpp
 )
 
-target_compile_definitions(PM0 PUBLIC
+target_compile_definitions(Arcanist PUBLIC
     JUCE_WEB_BROWSER=0
     JUCE_USE_CURL=0
     JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
-target_include_directories(PM0 PRIVATE Source/)
+target_include_directories(Arcanist PRIVATE Source/)
 
-target_compile_features(PM0 PUBLIC cxx_std_20)
+target_compile_features(Arcanist PUBLIC cxx_std_20)
 
-target_link_libraries(PM0
+target_link_libraries(Arcanist
     PRIVATE
-        PM0_BinaryData
+        Arcanist_BinaryData
         juce::juce_audio_utils
         juce::juce_audio_plugin_client
         juce::juce_dsp
@@ -87,8 +87,8 @@ target_link_libraries(PM0
 )
 
 clap_juce_extensions_plugin(
-    TARGET      PM0
-    CLAP_ID     "com.yvanjanet.pm0"
+    TARGET      Arcanist
+    CLAP_ID     "com.spellbound.arcanist"
     CLAP_FEATURES synth
     CLAP_PROCESS_EVENTS_RESOLUTION_SAMPLES 64
 )
@@ -98,20 +98,20 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
 endif()
 
-set(_ARTS "${CMAKE_BINARY_DIR}/PM0_artefacts/${CMAKE_BUILD_TYPE}")
+set(_ARTS "${CMAKE_BINARY_DIR}/Arcanist_artefacts/${CMAKE_BUILD_TYPE}")
 
-install(DIRECTORY  "${_ARTS}/VST3/PM0.vst3"
+install(DIRECTORY  "${_ARTS}/VST3/Arcanist.vst3"
         DESTINATION VST3
         COMPONENT   Runtime
         USE_SOURCE_PERMISSIONS)
 
-install(FILES      "${_ARTS}/CLAP/PM0.clap"
+install(FILES      "${_ARTS}/CLAP/Arcanist.clap"
         DESTINATION CLAP
         COMPONENT   Runtime
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                     GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-install(PROGRAMS   "${_ARTS}/Standalone/PM0"
+install(PROGRAMS   "${_ARTS}/Standalone/Arcanist"
         DESTINATION bin
         COMPONENT   Runtime)
 
@@ -122,12 +122,12 @@ install(PROGRAMS   "${CMAKE_CURRENT_SOURCE_DIR}/scripts/install.sh"
 
 # ── CPack (TGZ) ───────────────────────────────────────────────────────────────
 set(CPACK_GENERATOR                 TGZ)
-set(CPACK_PACKAGE_NAME              PM0)
-set(CPACK_PACKAGE_VENDOR            YvanJanet)
+set(CPACK_PACKAGE_NAME              Arcanist)
+set(CPACK_PACKAGE_VENDOR            spellbound)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Soft pads and drones synthesizer")
 set(CPACK_PACKAGE_VERSION           ${PROJECT_VERSION})
 set(CPACK_SYSTEM_NAME               linux-x86_64)
-set(CPACK_PACKAGE_FILE_NAME         "PM0-${PROJECT_VERSION}-linux-x86_64")
+set(CPACK_PACKAGE_FILE_NAME         "Arcanist-${PROJECT_VERSION}-linux-x86_64")
 set(CPACK_PACKAGING_INSTALL_PREFIX  "")
 set(CPACK_STRIP_FILES               TRUE)
 set(CPACK_PACKAGE_CHECKSUM          SHA256)

@@ -1,4 +1,4 @@
-# PM0 Preset System Implementation Plan
+# Arcanist Preset System Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Cross-platform user preset paths: Linux `~/.config/PM0/presets/`, macOS `~/Library/Application Support/PM0/presets/`, Windows `%APPDATA%/PM0/presets/`
+- Cross-platform user preset paths: Linux `~/.config/Arcanist/presets/`, macOS `~/Library/Application Support/Arcanist/presets/`, Windows `%APPDATA%/Arcanist/presets/`
 - Factory presets: 24 total, read-only, organized in 6 categories
 - Preset storage: XML files matching APVTS state format
 - Program methods: integrate with existing AudioProcessor program infrastructure
@@ -172,13 +172,13 @@ juce::File PresetManager::getUserPresetsDirectory() const
     // Platform-specific directory selection
 #if JUCE_WINDOWS
     auto appData = juce::File::getSpecialLocation (juce::File::commonApplicationDataDirectory);
-    return appData.getChildFile ("PM0").getChildFile ("presets");
+    return appData.getChildFile ("Arcanist").getChildFile ("presets");
 #elif JUCE_MAC
     auto appSupport = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory);
-    return appSupport.getChildFile ("PM0").getChildFile ("presets");
+    return appSupport.getChildFile ("Arcanist").getChildFile ("presets");
 #else // JUCE_LINUX
     auto home = juce::File::getSpecialLocation (juce::File::userHomeDirectory);
-    return home.getChildFile (".config").getChildFile ("PM0").getChildFile ("presets");
+    return home.getChildFile (".config").getChildFile ("Arcanist").getChildFile ("presets");
 #endif
 }
 
@@ -439,7 +439,7 @@ Expected: Errors about undefined binary data (normal at this stage), no syntax e
 - Create: `Source/Presets/Factory/001_CelestialDrift.xml` through `024_VintageSynthPad.xml`
 
 **Interfaces:**
-- Consumes: Current PM0 parameter defaults from PluginProcessor::createParameterLayout()
+- Consumes: Current Arcanist parameter defaults from PluginProcessor::createParameterLayout()
 - Produces: 24 XML files matching APVTS state format
 
 **Steps:**
@@ -463,7 +463,7 @@ From `Source/PluginProcessor.cpp` lines 206-254, the defaults are:
 - [ ] **Step 2: Create preset directory**
 
 ```bash
-mkdir -p /home/yvan/Projects/AudioPlugins/PM0/Source/Presets/Factory
+mkdir -p /home/yvan/Projects/AudioPlugins/Arcanist/Source/Presets/Factory
 ```
 
 - [ ] **Step 3: Create factory preset template XML structure**
@@ -949,7 +949,7 @@ All factory presets follow this XML structure (matching APVTS state format):
 - [ ] **Step 5: Verify all 24 XML files are created and well-formed**
 
 ```bash
-ls -1 /home/yvan/Projects/AudioPlugins/PM0/Source/Presets/Factory/ | wc -l
+ls -1 /home/yvan/Projects/AudioPlugins/Arcanist/Source/Presets/Factory/ | wc -l
 ```
 
 Expected output: `24`
@@ -957,7 +957,7 @@ Expected output: `24`
 Test one XML file for validity:
 
 ```bash
-xmllint /home/yvan/Projects/AudioPlugins/PM0/Source/Presets/Factory/001_CelestialDrift.xml --noout
+xmllint /home/yvan/Projects/AudioPlugins/Arcanist/Source/Presets/Factory/001_CelestialDrift.xml --noout
 ```
 
 Expected: No output (file is valid XML).
@@ -978,14 +978,14 @@ Expected: No output (file is valid XML).
 - [ ] **Step 1: Read current CMakeLists.txt**
 
 ```bash
-cat /home/yvan/Projects/AudioPlugins/PM0/CMakeLists.txt | head -100
+cat /home/yvan/Projects/AudioPlugins/Arcanist/CMakeLists.txt | head -100
 ```
 
 Review the file to understand its structure, especially where target sources are defined.
 
 - [ ] **Step 2: Add binary data embedding rule before the main target definitions**
 
-After the JUCE dependencies but before `add_library(PM0_SharedCode ...)` or similar, add:
+After the JUCE dependencies but before `add_library(Arcanist_SharedCode ...)` or similar, add:
 
 ```cmake
 # Embed factory presets as binary data
@@ -996,25 +996,25 @@ add_custom_command(
     COMMAND ${JUCE_BIN2C_EXECUTABLE} ${FACTORY_PRESET_FILES}
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Presets/BinaryData.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Presets/BinaryData.cpp"
-        PM0_BinaryData
+        Arcanist_BinaryData
     DEPENDS ${FACTORY_PRESET_FILES}
     COMMENT "Embedding factory presets as binary data"
 )
 
-add_library(PM0_BinaryData STATIC
+add_library(Arcanist_BinaryData STATIC
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/Presets/BinaryData.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/Presets/BinaryData.cpp"
 )
-target_include_directories(PM0_BinaryData PUBLIC Source/Presets)
+target_include_directories(Arcanist_BinaryData PUBLIC Source/Presets)
 ```
 
-- [ ] **Step 3: Link PM0_BinaryData to all plugin targets**
+- [ ] **Step 3: Link Arcanist_BinaryData to all plugin targets**
 
-For each target (PM0_Standalone, PM0_VST3, PM0_CLAP), add:
+For each target (Arcanist_Standalone, Arcanist_VST3, Arcanist_CLAP), add:
 
 ```cmake
-target_link_libraries(PM0_Standalone PRIVATE PM0_BinaryData)
-# Repeat for PM0_VST3, PM0_CLAP
+target_link_libraries(Arcanist_Standalone PRIVATE Arcanist_BinaryData)
+# Repeat for Arcanist_VST3, Arcanist_CLAP
 ```
 
 (Note: Exact location depends on current CMakeLists.txt structure.)
@@ -1022,7 +1022,7 @@ target_link_libraries(PM0_Standalone PRIVATE PM0_BinaryData)
 - [ ] **Step 4: Test CMake configuration**
 
 ```bash
-cd /home/yvan/Projects/AudioPlugins/PM0 && cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cd /home/yvan/Projects/AudioPlugins/Arcanist && cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 ```
 
 Expected: CMake configures successfully. BinaryData.h/cpp are NOT yet generated (they'll be generated on first build).
@@ -1058,7 +1058,7 @@ Expected: You may see warnings or errors about `juce_bin2c` if JUCE helper is no
 #pragma once
 #include <juce_core/juce_core.h>
 
-namespace PM0_BinaryData
+namespace Arcanist_BinaryData
 {
     // Each factory preset is accessible as: getPresetXML(name)
     // Returns juce::MemoryInputStream or similar
@@ -1077,7 +1077,7 @@ namespace PM0_BinaryData
 ```cpp
 #include "BinaryData.h"
 
-namespace PM0_BinaryData
+namespace Arcanist_BinaryData
 {
     juce::String getPresetXML (const juce::String& presetName)
     {
@@ -1122,7 +1122,7 @@ bool PresetManager::loadPresetInternal (const PresetInfo& preset)
     if (preset.isFactory)
     {
         // Try binary data first (once embedded)
-        // juce::String xmlStr = PM0_BinaryData::getPresetXML (preset.name);
+        // juce::String xmlStr = Arcanist_BinaryData::getPresetXML (preset.name);
         // if (!xmlStr.isEmpty()) { xmlElement = juce::parseXml(xmlStr); }
 
         // Fallback: load from embedded resources folder (for development)
@@ -1208,7 +1208,7 @@ private:
 In `Source/PluginProcessor.cpp`, update the constructor:
 
 ```cpp
-PM0AudioProcessor::PM0AudioProcessor()
+ArcanistAudioProcessor::ArcanistAudioProcessor()
     : AudioProcessor (BusesProperties()
         .withOutput ("Output", juce::AudioChannelSet::stereo(), true))
     , apvts (*this, nullptr, "Parameters", createParameterLayout())
@@ -1220,7 +1220,7 @@ PM0AudioProcessor::PM0AudioProcessor()
 - [ ] **Step 3: Implement getNumPrograms()**
 
 ```cpp
-int PM0AudioProcessor::getNumPrograms()
+int ArcanistAudioProcessor::getNumPrograms()
 {
     if (presetManager_)
     {
@@ -1234,7 +1234,7 @@ int PM0AudioProcessor::getNumPrograms()
 - [ ] **Step 4: Implement getCurrentProgram()**
 
 ```cpp
-int PM0AudioProcessor::getCurrentProgram()
+int ArcanistAudioProcessor::getCurrentProgram()
 {
     if (presetManager_)
         return presetManager_->getCurrentPresetIndex();
@@ -1245,7 +1245,7 @@ int PM0AudioProcessor::getCurrentProgram()
 - [ ] **Step 5: Implement setCurrentProgram()**
 
 ```cpp
-void PM0AudioProcessor::setCurrentProgram (int index)
+void ArcanistAudioProcessor::setCurrentProgram (int index)
 {
     if (presetManager_)
         presetManager_->loadPreset (index);
@@ -1255,7 +1255,7 @@ void PM0AudioProcessor::setCurrentProgram (int index)
 - [ ] **Step 6: Implement getProgramName()**
 
 ```cpp
-const juce::String PM0AudioProcessor::getProgramName (int index)
+const juce::String ArcanistAudioProcessor::getProgramName (int index)
 {
     if (presetManager_)
     {
@@ -1270,7 +1270,7 @@ const juce::String PM0AudioProcessor::getProgramName (int index)
 - [ ] **Step 7: Implement changeProgramName()**
 
 ```cpp
-void PM0AudioProcessor::changeProgramName (int index, const juce::String& newName)
+void ArcanistAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
     if (!presetManager_)
         return;
@@ -1338,7 +1338,7 @@ bool PresetManager::renamePreset (int index, const juce::String& newName)
 Now update changeProgramName in PluginProcessor:
 
 ```cpp
-void PM0AudioProcessor::changeProgramName (int index, const juce::String& newName)
+void ArcanistAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
     if (presetManager_)
         presetManager_->renamePreset (index, newName);
@@ -1409,7 +1409,7 @@ updatePresetList();
 - [ ] **Step 3: Implement updatePresetList() method**
 
 ```cpp
-void PM0AudioProcessorEditor::updatePresetList()
+void ArcanistAudioProcessorEditor::updatePresetList()
 {
     presetSelector_.clear (juce::dontSendNotification);
 
@@ -1442,7 +1442,7 @@ Then in the editor, use `proc_.getPresetManager()` instead of `proc_.presetManag
 - [ ] **Step 4: Implement onPresetSelected() callback**
 
 ```cpp
-void PM0AudioProcessorEditor::onPresetSelected()
+void ArcanistAudioProcessorEditor::onPresetSelected()
 {
     int selectedIndex = presetSelector_.getSelectedItemIndex();
     if (selectedIndex >= 0)
@@ -1453,7 +1453,7 @@ void PM0AudioProcessorEditor::onPresetSelected()
 - [ ] **Step 5: Implement onSaveAsPressed() callback**
 
 ```cpp
-void PM0AudioProcessorEditor::onSaveAsPressed()
+void ArcanistAudioProcessorEditor::onSaveAsPressed()
 {
     auto options = juce::DialogOptions()
         .withTitle ("Save Preset As")
@@ -1485,7 +1485,7 @@ void PM0AudioProcessorEditor::onSaveAsPressed()
 - [ ] **Step 6: Implement onDeletePressed() callback**
 
 ```cpp
-void PM0AudioProcessorEditor::onDeletePressed()
+void ArcanistAudioProcessorEditor::onDeletePressed()
 {
     int currentIndex = proc_.getPresetManager()->getCurrentPresetIndex();
     auto presets = proc_.getPresetManager()->getPresetList();
@@ -1514,7 +1514,7 @@ void PM0AudioProcessorEditor::onDeletePressed()
 In `Source/PluginEditor.h`, make the class inherit from `juce::ComboBox::Listener` and `juce::Button::Listener`:
 
 ```cpp
-class PM0AudioProcessorEditor final
+class ArcanistAudioProcessorEditor final
     : public juce::AudioProcessorEditor,
       private juce::Timer,
       private juce::ComboBox::Listener,
@@ -1532,13 +1532,13 @@ private:
 In `Source/PluginEditor.cpp`, implement the listener callbacks:
 
 ```cpp
-void PM0AudioProcessorEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
+void ArcanistAudioProcessorEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
 {
     if (comboBoxThatHasChanged == &presetSelector_)
         onPresetSelected();
 }
 
-void PM0AudioProcessorEditor::buttonClicked (juce::Button* buttonThatWasClicked)
+void ArcanistAudioProcessorEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 {
     if (buttonThatWasClicked == &saveAsButton_)
         onSaveAsPressed();
@@ -1552,7 +1552,7 @@ void PM0AudioProcessorEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 In `Source/PluginEditor.cpp`, update the `resized()` method to add preset UI layout at the top:
 
 ```cpp
-void PM0AudioProcessorEditor::resized()
+void ArcanistAudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds();
     
@@ -1570,10 +1570,10 @@ void PM0AudioProcessorEditor::resized()
 
 - [ ] **Step 9: Modify editor timer callback to refresh preset list on parameter changes**
 
-In `PM0AudioProcessorEditor::timerCallback()`, add:
+In `ArcanistAudioProcessorEditor::timerCallback()`, add:
 
 ```cpp
-void PM0AudioProcessorEditor::timerCallback()
+void ArcanistAudioProcessorEditor::timerCallback()
 {
     // ... (existing timer logic)
     
@@ -1609,7 +1609,7 @@ Expected: No errors.
 - [ ] **Step 1: Build standalone executable**
 
 ```bash
-cmake --build build --target PM0_Standalone --parallel
+cmake --build build --target Arcanist_Standalone --parallel
 ```
 
 Expected: Build succeeds.
@@ -1617,7 +1617,7 @@ Expected: Build succeeds.
 - [ ] **Step 2: Run standalone plugin**
 
 ```bash
-./build/PM0_artefacts/Debug/Standalone/PM0
+./build/Arcanist_artefacts/Debug/Standalone/Arcanist
 ```
 
 - [ ] **Step 3: Test factory preset loading**
@@ -1671,14 +1671,14 @@ In the running plugin UI:
 - [ ] **Step 1: Install plugin to DAW locations**
 
 ```bash
-cp -r build/PM0_artefacts/Debug/VST3/PM0.vst3 ~/.vst3/
-cp    build/PM0_artefacts/Debug/CLAP/PM0.clap ~/.clap/
+cp -r build/Arcanist_artefacts/Debug/VST3/Arcanist.vst3 ~/.vst3/
+cp    build/Arcanist_artefacts/Debug/CLAP/Arcanist.clap ~/.clap/
 ```
 
 - [ ] **Step 2: Load plugin in a DAW (e.g., Reaper, Studio One, Bitwig)**
 
 - Create a new MIDI track
-- Insert PM0 plugin
+- Insert Arcanist plugin
 - Verify all 24 factory presets + any user presets appear in the DAW's program selector
 - Verify the program count matches getNumPrograms()
 
@@ -1733,7 +1733,7 @@ Using MIDI keyboard or MIDI editor:
 
 - [ ] **Step 4: Test user presets directory creation**
 
-- Delete the user presets directory (~/.config/PM0/presets/)
+- Delete the user presets directory (~/.config/Arcanist/presets/)
 - Launch plugin
 - Verify directory is auto-created on first "Save As"
 - Save a preset and verify it appears in the directory
@@ -1742,7 +1742,7 @@ Using MIDI keyboard or MIDI editor:
 
 ## Summary
 
-This plan implements a complete preset system for PM0:
+This plan implements a complete preset system for Arcanist:
 
 1. **PresetManager** — Core class managing load/save/delete/enumerate operations
 2. **24 Factory Presets** — Hand-crafted XML files with parameter values for each sonic character

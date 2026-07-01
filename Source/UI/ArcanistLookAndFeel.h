@@ -2,7 +2,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 // ── Shared colour constants ────────────────────────────────────────────────────
-struct PM0Col
+struct ArcanistCol
 {
     static juce::Colour bg()           { return juce::Colour (0xFF181B18); }  // editor background
     static juce::Colour panel()        { return juce::Colour (0xFF1E2220); }  // section panel face
@@ -29,10 +29,10 @@ struct PM0Col
 };
 
 // ── Custom look-and-feel ───────────────────────────────────────────────────────
-class PM0LookAndFeel : public juce::LookAndFeel_V4
+class ArcanistLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    PM0LookAndFeel();
+    ArcanistLookAndFeel();
 
     void drawRotarySlider (juce::Graphics&, int x, int y, int w, int h,
                            float sliderPosProportional,

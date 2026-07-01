@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Remove PM0 from all known install locations.
+# Remove Arcanist from all known install locations.
 set -euo pipefail
 
 removed=0
@@ -13,20 +13,20 @@ remove() {
     fi
 }
 
-echo "Uninstalling PM0..."
+echo "Uninstalling Arcanist..."
 
-remove "${HOME}/.vst3/PM0.vst3"
-remove "${HOME}/.clap/PM0.clap"
-remove "${HOME}/.local/bin/PM0"
+remove "${HOME}/.vst3/Arcanist.vst3"
+remove "${HOME}/.clap/Arcanist.clap"
+remove "${HOME}/.local/bin/Arcanist"
 
 if [[ $EUID -eq 0 ]]; then
-    remove "/usr/lib/vst3/PM0.vst3"
-    remove "/usr/lib/clap/PM0.clap"
-    remove "/usr/local/bin/PM0"
+    remove "/usr/lib/vst3/Arcanist.vst3"
+    remove "/usr/lib/clap/Arcanist.clap"
+    remove "/usr/local/bin/Arcanist"
 else
-    for path in "/usr/lib/vst3/PM0.vst3" \
-                "/usr/lib/clap/PM0.clap" \
-                "/usr/local/bin/PM0"; do
+    for path in "/usr/lib/vst3/Arcanist.vst3" \
+                "/usr/lib/clap/Arcanist.clap" \
+                "/usr/local/bin/Arcanist"; do
         if [[ -e "$path" ]]; then
             echo "  Skipping $path (re-run with sudo to remove)"
         fi

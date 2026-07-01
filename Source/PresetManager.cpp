@@ -28,14 +28,14 @@ juce::File PresetManager::getUserPresetsDirectory() const
     // Platform-specific directory selection
 #if JUCE_WINDOWS
     auto appData = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory);
-    return appData.getChildFile ("PM0").getChildFile ("presets");
+    return appData.getChildFile ("Arcanist").getChildFile ("presets");
 #elif JUCE_MAC
     auto appSupport = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory)
                                  .getChildFile ("Application Support");
-    return appSupport.getChildFile ("PM0").getChildFile ("presets");
+    return appSupport.getChildFile ("Arcanist").getChildFile ("presets");
 #else // JUCE_LINUX
     auto home = juce::File::getSpecialLocation (juce::File::userHomeDirectory);
-    return home.getChildFile (".config").getChildFile ("PM0").getChildFile ("presets");
+    return home.getChildFile (".config").getChildFile ("Arcanist").getChildFile ("presets");
 #endif
 }
 
@@ -202,7 +202,7 @@ bool PresetManager::loadPresetInternal (const PresetInfo& preset)
         juce::String resourceName = "_" + paddedIndex + "_" + nameNoSpaces + "_xml";
 
         int dataSize = 0;
-        const char* data = PM0_BinaryData::getNamedResource (resourceName.toRawUTF8(), dataSize);
+        const char* data = Arcanist_BinaryData::getNamedResource (resourceName.toRawUTF8(), dataSize);
 
         if (data == nullptr || dataSize <= 0)
         {

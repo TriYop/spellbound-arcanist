@@ -1,27 +1,27 @@
-#include "PM0LookAndFeel.h"
+#include "ArcanistLookAndFeel.h"
 #include <cmath>
 
-PM0LookAndFeel::PM0LookAndFeel()
+ArcanistLookAndFeel::ArcanistLookAndFeel()
 {
     // Knob text boxes
-    setColour (juce::Slider::textBoxTextColourId,        PM0Col::valueText());
-    setColour (juce::Slider::textBoxBackgroundColourId,  PM0Col::tbBg());
-    setColour (juce::Slider::textBoxOutlineColourId,     PM0Col::panelBorder());
-    setColour (juce::Slider::textBoxHighlightColourId,   PM0Col::valueArc().withAlpha (0.4f));
+    setColour (juce::Slider::textBoxTextColourId,        ArcanistCol::valueText());
+    setColour (juce::Slider::textBoxBackgroundColourId,  ArcanistCol::tbBg());
+    setColour (juce::Slider::textBoxOutlineColourId,     ArcanistCol::panelBorder());
+    setColour (juce::Slider::textBoxHighlightColourId,   ArcanistCol::valueArc().withAlpha (0.4f));
 
     // Labels
-    setColour (juce::Label::textColourId,                PM0Col::textPrimary());
+    setColour (juce::Label::textColourId,                ArcanistCol::textPrimary());
     setColour (juce::Label::backgroundColourId,          juce::Colours::transparentBlack);
 
     // Text editor (inline edit of textbox)
-    setColour (juce::TextEditor::backgroundColourId,     PM0Col::tbBg());
-    setColour (juce::TextEditor::textColourId,           PM0Col::valueText());
-    setColour (juce::TextEditor::outlineColourId,        PM0Col::valueArc().withAlpha (0.6f));
-    setColour (juce::TextEditor::highlightColourId,      PM0Col::valueArc().withAlpha (0.3f));
-    setColour (juce::TextEditor::highlightedTextColourId, PM0Col::textPrimary());
+    setColour (juce::TextEditor::backgroundColourId,     ArcanistCol::tbBg());
+    setColour (juce::TextEditor::textColourId,           ArcanistCol::valueText());
+    setColour (juce::TextEditor::outlineColourId,        ArcanistCol::valueArc().withAlpha (0.6f));
+    setColour (juce::TextEditor::highlightColourId,      ArcanistCol::valueArc().withAlpha (0.3f));
+    setColour (juce::TextEditor::highlightedTextColourId, ArcanistCol::textPrimary());
 }
 
-void PM0LookAndFeel::drawRotarySlider (juce::Graphics& g,
+void ArcanistLookAndFeel::drawRotarySlider (juce::Graphics& g,
                                         int x, int y, int w, int h,
                                         float sliderPos,
                                         float startAngle, float endAngle,
@@ -43,7 +43,7 @@ void PM0LookAndFeel::drawRotarySlider (juce::Graphics& g,
         juce::Path arc;
         arc.addArc (cx - arcR, cy - arcR, arcR * 2.f, arcR * 2.f,
                     startAngle, endAngle, true);
-        g.setColour (PM0Col::trackArc());
+        g.setColour (ArcanistCol::trackArc());
         g.strokePath (arc, juce::PathStrokeType (arcStrokeFull,
                       juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
     }
@@ -54,7 +54,7 @@ void PM0LookAndFeel::drawRotarySlider (juce::Graphics& g,
         juce::Path arc;
         arc.addArc (cx - arcR, cy - arcR, arcR * 2.f, arcR * 2.f,
                     startAngle, angle, true);
-        g.setColour (PM0Col::valueArc());
+        g.setColour (ArcanistCol::valueArc());
         g.strokePath (arc, juce::PathStrokeType (arcStrokeValue,
                       juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
     }
@@ -65,14 +65,14 @@ void PM0LookAndFeel::drawRotarySlider (juce::Graphics& g,
 
     // ── Knob body (gradient) ─────────────────────────────────────────────
     {
-        juce::ColourGradient grad (PM0Col::knobTop(), cx, cy - knobR,
-                                   PM0Col::knobBottom(), cx, cy + knobR, false);
+        juce::ColourGradient grad (ArcanistCol::knobTop(), cx, cy - knobR,
+                                   ArcanistCol::knobBottom(), cx, cy + knobR, false);
         g.setGradientFill (grad);
         g.fillEllipse (cx - knobR, cy - knobR, knobR * 2.f, knobR * 2.f);
     }
 
     // ── Knob rim (top highlight) ─────────────────────────────────────────
-    g.setColour (PM0Col::knobRim());
+    g.setColour (ArcanistCol::knobRim());
     g.drawEllipse (cx - knobR, cy - knobR, knobR * 2.f, knobR * 2.f, 0.7f);
 
     // ── Indicator line + tip dot ─────────────────────────────────────────
@@ -82,14 +82,14 @@ void PM0LookAndFeel::drawRotarySlider (juce::Graphics& g,
         float startR = knobR * 0.22f;
         float endR   = knobR * 0.72f;
 
-        g.setColour (PM0Col::valueArc());
+        g.setColour (ArcanistCol::valueArc());
         g.drawLine (cx + s * startR, cy - c * startR,
                     cx + s * endR,   cy - c * endR,  1.8f);
         g.fillEllipse (cx + s * endR - 2.5f, cy - c * endR - 2.5f, 5.f, 5.f);
     }
 }
 
-void PM0LookAndFeel::drawLabel (juce::Graphics& g, juce::Label& label)
+void ArcanistLookAndFeel::drawLabel (juce::Graphics& g, juce::Label& label)
 {
     g.fillAll (label.findColour (juce::Label::backgroundColourId));
 
@@ -105,7 +105,7 @@ void PM0LookAndFeel::drawLabel (juce::Graphics& g, juce::Label& label)
     }
 }
 
-juce::Label* PM0LookAndFeel::createSliderTextBox (juce::Slider& slider)
+juce::Label* ArcanistLookAndFeel::createSliderTextBox (juce::Slider& slider)
 {
     auto* l = LookAndFeel_V4::createSliderTextBox (slider);
     l->setFont (juce::Font (juce::FontOptions{}.withHeight (10.f)));

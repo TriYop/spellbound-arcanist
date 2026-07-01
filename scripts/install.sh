@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install PM0 plugins and standalone app.
+# Install Arcanist plugins and standalone app.
 # Usage:
 #   ./install.sh           — install to user directories (no root needed)
 #   ./install.sh --system  — install system-wide to /usr/lib (requires sudo)
@@ -25,21 +25,21 @@ else
     BIN_DIR="${HOME}/.local/bin"
 fi
 
-echo "Installing PM0..."
+echo "Installing Arcanist..."
 
 mkdir -p "${VST3_DIR}"
-rm -rf   "${VST3_DIR}/PM0.vst3"
-cp -r    "${SCRIPT_DIR}/VST3/PM0.vst3" "${VST3_DIR}/"
-echo "  VST3  → ${VST3_DIR}/PM0.vst3"
+rm -rf   "${VST3_DIR}/Arcanist.vst3"
+cp -r    "${SCRIPT_DIR}/VST3/Arcanist.vst3" "${VST3_DIR}/"
+echo "  VST3  → ${VST3_DIR}/Arcanist.vst3"
 
 mkdir -p "${CLAP_DIR}"
-cp       "${SCRIPT_DIR}/CLAP/PM0.clap" "${CLAP_DIR}/"
-chmod    755 "${CLAP_DIR}/PM0.clap"
-echo "  CLAP  → ${CLAP_DIR}/PM0.clap"
+cp       "${SCRIPT_DIR}/CLAP/Arcanist.clap" "${CLAP_DIR}/"
+chmod    755 "${CLAP_DIR}/Arcanist.clap"
+echo "  CLAP  → ${CLAP_DIR}/Arcanist.clap"
 
 mkdir -p "${BIN_DIR}"
-cp       "${SCRIPT_DIR}/bin/PM0" "${BIN_DIR}/"
-chmod    755 "${BIN_DIR}/PM0"
-echo "  App   → ${BIN_DIR}/PM0"
+cp       "${SCRIPT_DIR}/bin/Arcanist" "${BIN_DIR}/"
+chmod    755 "${BIN_DIR}/Arcanist"
+echo "  App   → ${BIN_DIR}/Arcanist"
 
 echo "Done."

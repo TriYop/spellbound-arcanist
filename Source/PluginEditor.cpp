@@ -2,7 +2,7 @@
 
 // ── Constructor ───────────────────────────────────────────────────────────────
 
-PM0AudioProcessorEditor::PM0AudioProcessorEditor (PM0AudioProcessor& p)
+ArcanistAudioProcessorEditor::ArcanistAudioProcessorEditor (ArcanistAudioProcessor& p)
     : AudioProcessorEditor (&p), proc_ (p)
 {
     setLookAndFeel (&laf_);
@@ -136,7 +136,7 @@ PM0AudioProcessorEditor::PM0AudioProcessorEditor (PM0AudioProcessor& p)
     startTimer (30);
 }
 
-PM0AudioProcessorEditor::~PM0AudioProcessorEditor()
+ArcanistAudioProcessorEditor::~ArcanistAudioProcessorEditor()
 {
     stopTimer();
     setLookAndFeel (nullptr);
@@ -144,7 +144,7 @@ PM0AudioProcessorEditor::~PM0AudioProcessorEditor()
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-void PM0AudioProcessorEditor::setupKnob (juce::Slider& knob, juce::Label& lbl,
+void ArcanistAudioProcessorEditor::setupKnob (juce::Slider& knob, juce::Label& lbl,
                                           const juce::String& labelText)
 {
     knob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
@@ -159,7 +159,7 @@ void PM0AudioProcessorEditor::setupKnob (juce::Slider& knob, juce::Label& lbl,
 
 // ── paintSection() ────────────────────────────────────────────────────────────
 
-void PM0AudioProcessorEditor::paintSection (juce::Graphics& g,
+void ArcanistAudioProcessorEditor::paintSection (juce::Graphics& g,
                                               juce::Rectangle<int> rect,
                                               const juce::String& title,
                                               juce::Colour accent,
@@ -168,7 +168,7 @@ void PM0AudioProcessorEditor::paintSection (juce::Graphics& g,
     const float alpha = dimmed ? 0.35f : 1.f;
     auto sb = rect.toFloat().reduced (2.f);
 
-    g.setColour (PM0Col::panel().withMultipliedAlpha (alpha));
+    g.setColour (ArcanistCol::panel().withMultipliedAlpha (alpha));
     g.fillRoundedRectangle (sb, 4.f);
 
     auto strip = sb.withHeight (20.f);
@@ -176,7 +176,7 @@ void PM0AudioProcessorEditor::paintSection (juce::Graphics& g,
     g.fillRoundedRectangle (strip, 4.f);
     g.fillRect (strip.withTrimmedTop (4.f));
 
-    g.setColour (PM0Col::panelBorder().withMultipliedAlpha (alpha));
+    g.setColour (ArcanistCol::panelBorder().withMultipliedAlpha (alpha));
     g.drawRoundedRectangle (sb.reduced (0.5f), 4.f, 0.8f);
 
     g.setColour (juce::Colour (0xFF505858).withMultipliedAlpha (alpha));
@@ -194,37 +194,37 @@ void PM0AudioProcessorEditor::paintSection (juce::Graphics& g,
 
 // ── paint() ───────────────────────────────────────────────────────────────────
 
-void PM0AudioProcessorEditor::paint (juce::Graphics& g)
+void ArcanistAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (PM0Col::bg());
+    g.fillAll (ArcanistCol::bg());
 
     g.setColour (juce::Colour (0xFF141614));
     g.fillRect (0, 0, getWidth(), 50);
-    g.setColour (PM0Col::panelBorder());
+    g.setColour (ArcanistCol::panelBorder());
     g.drawLine (0.f, 49.5f, (float)getWidth(), 49.5f, 0.8f);
 
     // Row 1 sections
-    paintSection (g, oscSect_,    "OSCILLATOR",  PM0Col::osc());
-    paintSection (g, filterSect_, "FILTER",       PM0Col::filter());
-    paintSection (g, volEnvSect_, "VOLUME ENV",   PM0Col::volEnv());
-    paintSection (g, fEnvSect_,   "FILTER ENV",   PM0Col::fEnv());
-    paintSection (g, lfoSect_,    "LFO",          PM0Col::lfo());
-    paintSection (g, masterSect_, "MASTER",        PM0Col::master());
+    paintSection (g, oscSect_,    "OSCILLATOR",  ArcanistCol::osc());
+    paintSection (g, filterSect_, "FILTER",       ArcanistCol::filter());
+    paintSection (g, volEnvSect_, "VOLUME ENV",   ArcanistCol::volEnv());
+    paintSection (g, fEnvSect_,   "FILTER ENV",   ArcanistCol::fEnv());
+    paintSection (g, lfoSect_,    "LFO",          ArcanistCol::lfo());
+    paintSection (g, masterSect_, "MASTER",        ArcanistCol::master());
 
     // Output meter (within masterSect_)
     {
         auto meterArea = masterSect_.reduced (8, 4).withTrimmedTop (masterSect_.getHeight() / 2);
-        g.setColour (PM0Col::trackArc());
+        g.setColour (ArcanistCol::trackArc());
         g.fillRect (meterArea);
-        g.setColour (PM0Col::panelBorder());
+        g.setColour (ArcanistCol::panelBorder());
         g.drawRect (meterArea);
         float fill = juce::jmap (displayOutputPeak_, -60.f, 0.f, 0.f, (float)meterArea.getHeight());
         int fillH  = juce::jlimit (0, meterArea.getHeight(), (int)fill);
         if (fillH > 0) {
             auto fillRect  = meterArea.withTop (meterArea.getBottom() - fillH);
             auto meterCol  = displayOutputPeak_ > -6.f  ? juce::Colour (0xFFE84020)
-                           : displayOutputPeak_ > -18.f ? PM0Col::valueArc()
-                                                         : PM0Col::ledOn();
+                           : displayOutputPeak_ > -18.f ? ArcanistCol::valueArc()
+                                                         : ArcanistCol::ledOn();
             g.setColour (meterCol.withAlpha (0.8f));
             g.fillRect (fillRect);
         }
@@ -232,16 +232,16 @@ void PM0AudioProcessorEditor::paint (juce::Graphics& g)
 
     // Row 2 sections (dim when Osc 2 is off)
     const bool osc2On = *proc_.apvts.getRawParameterValue ("osc2_on") > 0.5f;
-    paintSection (g, osc2Sect_,  "OSC 2",       PM0Col::osc());
-    paintSection (g, mix2Sect_,  "MIX MODE",     PM0Col::master(),  !osc2On);
-    paintSection (g, env2Sect_,  "VOL ENV 2",    PM0Col::volEnv(),  !osc2On);
-    paintSection (g, flt2Sect_,  "FILTER 2",     PM0Col::filter(),  !osc2On);
-    paintSection (g, fenv2Sect_, "FILT ENV 2",   PM0Col::fEnv(),    !osc2On);
+    paintSection (g, osc2Sect_,  "OSC 2",       ArcanistCol::osc());
+    paintSection (g, mix2Sect_,  "MIX MODE",     ArcanistCol::master(),  !osc2On);
+    paintSection (g, env2Sect_,  "VOL ENV 2",    ArcanistCol::volEnv(),  !osc2On);
+    paintSection (g, flt2Sect_,  "FILTER 2",     ArcanistCol::filter(),  !osc2On);
+    paintSection (g, fenv2Sect_, "FILT ENV 2",   ArcanistCol::fEnv(),    !osc2On);
 }
 
 // ── resized() ─────────────────────────────────────────────────────────────────
 
-void PM0AudioProcessorEditor::resized()
+void ArcanistAudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds();
     const int kHeaderH = 22;
@@ -480,7 +480,7 @@ void PM0AudioProcessorEditor::resized()
 
 // ── timerCallback() ───────────────────────────────────────────────────────────
 
-void PM0AudioProcessorEditor::timerCallback()
+void ArcanistAudioProcessorEditor::timerCallback()
 {
     float newPeak = proc_.outputPeakDb.load (std::memory_order_relaxed);
     if (std::abs (newPeak - displayOutputPeak_) > 0.5f)
@@ -523,7 +523,7 @@ void PM0AudioProcessorEditor::timerCallback()
 
 // ── buttonClicked() ───────────────────────────────────────────────────────────
 
-void PM0AudioProcessorEditor::buttonClicked (juce::Button* btn)
+void ArcanistAudioProcessorEditor::buttonClicked (juce::Button* btn)
 {
     if (btn == &saveAsButton_) { onSaveAsPressed(); return; }
     if (btn == &deleteButton_) { onDeletePressed();  return; }
@@ -545,7 +545,7 @@ void PM0AudioProcessorEditor::buttonClicked (juce::Button* btn)
 
 // ── Preset management ─────────────────────────────────────────────────────────
 
-void PM0AudioProcessorEditor::updatePresetList()
+void ArcanistAudioProcessorEditor::updatePresetList()
 {
     presetSelector_.clear (juce::dontSendNotification);
     auto* pm = proc_.getPresetManager();
@@ -561,7 +561,7 @@ void PM0AudioProcessorEditor::updatePresetList()
     deleteButton_.setEnabled (!isFactory);
 }
 
-void PM0AudioProcessorEditor::onPresetSelected()
+void ArcanistAudioProcessorEditor::onPresetSelected()
 {
     int idx = presetSelector_.getSelectedItemIndex();
     if (idx >= 0) proc_.setCurrentProgram (idx);
@@ -572,14 +572,14 @@ void PM0AudioProcessorEditor::onPresetSelected()
     deleteButton_.setEnabled (!isFactory);
 }
 
-void PM0AudioProcessorEditor::onSaveAsPressed()
+void ArcanistAudioProcessorEditor::onSaveAsPressed()
 {
     auto* w = new juce::AlertWindow ("Save Preset As", "Enter preset name:", juce::AlertWindow::NoIcon);
     w->addTextEditor ("name", "", "Preset name:");
     w->addButton ("Save",   1, juce::KeyPress (juce::KeyPress::returnKey));
     w->addButton ("Cancel", 0, juce::KeyPress (juce::KeyPress::escapeKey));
 
-    juce::Component::SafePointer<PM0AudioProcessorEditor> safe (this);
+    juce::Component::SafePointer<ArcanistAudioProcessorEditor> safe (this);
     w->enterModalState (true,
         juce::ModalCallbackFunction::create ([safe, w] (int result) {
             if (result == 1 && safe != nullptr) {
@@ -592,7 +592,7 @@ void PM0AudioProcessorEditor::onSaveAsPressed()
         }), true);
 }
 
-void PM0AudioProcessorEditor::onDeletePressed()
+void ArcanistAudioProcessorEditor::onDeletePressed()
 {
     auto* pm = proc_.getPresetManager();
     if (!pm) return;
@@ -600,7 +600,7 @@ void PM0AudioProcessorEditor::onDeletePressed()
     auto presets = pm->getPresetList();
     if (idx < 0 || idx >= (int)presets.size() || presets[(size_t)idx].isFactory) return;
 
-    juce::Component::SafePointer<PM0AudioProcessorEditor> safe (this);
+    juce::Component::SafePointer<ArcanistAudioProcessorEditor> safe (this);
     juce::AlertWindow::showOkCancelBox (
         juce::AlertWindow::WarningIcon, "Delete Preset",
         "Delete preset '" + presets[(size_t)idx].name + "'?", "Delete", "Cancel", nullptr,

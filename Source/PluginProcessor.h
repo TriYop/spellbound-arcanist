@@ -5,13 +5,13 @@
 #include <vector>
 #include <memory>
 
-class PM0AudioProcessorEditor;
+class ArcanistAudioProcessorEditor;
 
-class PM0AudioProcessor final : public juce::AudioProcessor
+class ArcanistAudioProcessor final : public juce::AudioProcessor
 {
 public:
-    PM0AudioProcessor();
-    ~PM0AudioProcessor() override;
+    ArcanistAudioProcessor();
+    ~ArcanistAudioProcessor() override;
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
@@ -54,5 +54,5 @@ private:
     std::unique_ptr<PresetManager> presetManager_;
     std::vector<Voice> voices_;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PM0AudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArcanistAudioProcessor)
 };
