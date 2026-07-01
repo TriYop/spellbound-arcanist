@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DX Bass 1 — analysed from DSoundfont Ultimate DX Bass 1 A0.wav
+     Carrier: Sawtooth (best-fit 0.98 vs harmonic series)
+     FM: 58.5% inharmonic energy fraction confirms FM origin;
+         Osc2 SAW x2 with 70 ms ADR decays the modulator at pluck speed.
+     Envelope: 1 ms attack, 70 ms decay — from sample amplitude envelope.
+     Filter: 1400 Hz base (spectral centroid corrected from 200 Hz artifact). -->
+<Parameters>
+  <PARAM id="osc_waveform" value="2"/>
+  <PARAM id="osc_tune" value="0"/>
+  <PARAM id="osc_detune" value="3"/>
+  <PARAM id="filter_cutoff" value="1400"/>
+  <PARAM id="filter_resonance" value="0.25"/>
+  <PARAM id="filter_mode" value="0"/>
+  <PARAM id="env_attack" value="0.001"/>
+  <PARAM id="env_decay" value="0.07"/>
+  <PARAM id="env_sustain" value="0.45"/>
+  <PARAM id="env_release" value="0.4"/>
+  <PARAM id="env_filter_mod" value="55"/>
+  <PARAM id="lfo_speed" value="0.5"/>
+  <PARAM id="lfo_depth" value="0"/>
+  <PARAM id="lfo_target" value="0"/>
+  <PARAM id="output_gain" value="-3"/>
+  <PARAM id="env_sustain_on" value="1"/>
+  <PARAM id="fenv_attack" value="0.001"/>
+  <PARAM id="fenv_decay" value="0.07"/>
+  <PARAM id="fenv_sustain" value="0.0"/>
+  <PARAM id="fenv_release" value="0.5"/>
+  <PARAM id="fenv_sustain_on" value="0"/>
+  <PARAM id="osc2_on" value="1"/>
+  <PARAM id="osc2_waveform" value="2"/>
+  <PARAM id="osc2_mult" value="2"/>
+  <PARAM id="osc2_phase" value="0"/>
+  <PARAM id="osc2_mix_mode" value="2"/>
+  <PARAM id="osc2_mix_depth" value="19"/>
+  <PARAM id="osc2_env_on" value="1"/>
+  <PARAM id="osc2_env_attack" value="0.001"/>
+  <PARAM id="osc2_env_decay" value="0.07"/>
+  <PARAM id="osc2_env_sustain" value="0.0"/>
+  <PARAM id="osc2_env_release" value="0.2"/>
+  <PARAM id="osc2_env_sus_on" value="0"/>
+  <PARAM id="osc2_flt_on" value="0"/>
+  <PARAM id="osc2_flt_cutoff" value="4000"/>
+  <PARAM id="osc2_flt_reso" value="0.1"/>
+  <PARAM id="osc2_flt_mode" value="0"/>
+  <PARAM id="osc2_fenv_atk" value="0.001"/>
+  <PARAM id="osc2_fenv_dec" value="0.5"/>
+  <PARAM id="osc2_fenv_sus" value="0.0"/>
+  <PARAM id="osc2_fenv_rel" value="0.5"/>
+  <PARAM id="osc2_fenv_sus_on" value="0"/>
+  <PARAM id="osc2_fenv_depth" value="0"/>
+</Parameters>

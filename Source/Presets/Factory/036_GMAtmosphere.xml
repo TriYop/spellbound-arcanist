@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Hollow atmospheric whoosh: dramatic filter sweep (fenv_decay=0.4 s),
+     FM modulator through 500 Hz LP fades in 0.45 s leaving a dark SAW drone. -->
 <Parameters>
   <PARAM id="osc_waveform" value="2"/>
   <PARAM id="osc_tune" value="0"/>
-  <PARAM id="osc_detune" value="8"/>
-  <PARAM id="filter_cutoff" value="2000"/>
-  <PARAM id="filter_resonance" value="0.7"/>
+  <PARAM id="osc_detune" value="10"/>
+  <PARAM id="filter_cutoff" value="1800"/>
+  <PARAM id="filter_resonance" value="0.65"/>
   <PARAM id="filter_mode" value="0"/>
-  <PARAM id="env_attack" value="0.02"/>
-  <PARAM id="env_decay" value="0.8"/>
-  <PARAM id="env_sustain" value="0.1"/>
+  <PARAM id="env_attack" value="0.03"/>
+  <PARAM id="env_decay" value="0.7"/>
+  <PARAM id="env_sustain" value="0.06"/>
   <PARAM id="env_release" value="7.0"/>
-  <PARAM id="env_filter_mod" value="70"/>
+  <PARAM id="env_filter_mod" value="80"/>
   <PARAM id="lfo_speed" value="0.5"/>
-  <PARAM id="lfo_depth" value="15"/>
+  <PARAM id="lfo_depth" value="12"/>
   <PARAM id="lfo_target" value="1"/>
-  <PARAM id="output_gain" value="-3"/>
+  <PARAM id="output_gain" value="-2"/>
   <PARAM id="env_sustain_on" value="1"/>
   <PARAM id="fenv_attack" value="0.001"/>
-  <PARAM id="fenv_decay" value="0.5"/>
+  <PARAM id="fenv_decay" value="0.4"/>
   <PARAM id="fenv_sustain" value="0.0"/>
   <PARAM id="fenv_release" value="2.0"/>
   <PARAM id="fenv_sustain_on" value="0"/>
@@ -26,15 +28,15 @@
   <PARAM id="osc2_mult" value="1"/>
   <PARAM id="osc2_phase" value="0"/>
   <PARAM id="osc2_mix_mode" value="2"/>
-  <PARAM id="osc2_mix_depth" value="18"/>
-  <PARAM id="osc2_env_on" value="0"/>
-  <PARAM id="osc2_env_attack" value="0.1"/>
-  <PARAM id="osc2_env_decay" value="1.0"/>
-  <PARAM id="osc2_env_sustain" value="0.7"/>
+  <PARAM id="osc2_mix_depth" value="22"/>
+  <PARAM id="osc2_env_on" value="1"/>
+  <PARAM id="osc2_env_attack" value="0.001"/>
+  <PARAM id="osc2_env_decay" value="0.45"/>
+  <PARAM id="osc2_env_sustain" value="0.0"/>
   <PARAM id="osc2_env_release" value="2.0"/>
-  <PARAM id="osc2_env_sus_on" value="1"/>
+  <PARAM id="osc2_env_sus_on" value="0"/>
   <PARAM id="osc2_flt_on" value="1"/>
-  <PARAM id="osc2_flt_cutoff" value="600"/>
+  <PARAM id="osc2_flt_cutoff" value="500"/>
   <PARAM id="osc2_flt_reso" value="0.15"/>
   <PARAM id="osc2_flt_mode" value="0"/>
   <PARAM id="osc2_fenv_atk" value="0.001"/>

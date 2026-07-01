@@ -122,7 +122,8 @@ void PresetManager::loadFactoryPresets()
         { "GM Echoes",      "GM" },
         { "GM Sci-Fi",      "GM" },
         { "GM Voice",       "GM" },
-        { "GM Strings",     "GM" }
+        { "GM Strings",     "GM" },
+        { "DX Bass 1",      "Bass" }
     };
 
     factoryPresets_.clear();
