@@ -1,46 +1,46 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Parameters>
-  <PARAM id="osc_waveform" value="2"/>
-  <PARAM id="osc_tune" value="0"/>
-  <PARAM id="osc_detune" value="18"/>
-  <PARAM id="filter_cutoff" value="4000"/>
-  <PARAM id="filter_resonance" value="0.45"/>
-  <PARAM id="filter_mode" value="0"/>
-  <PARAM id="env_attack" value="0.7"/>
-  <PARAM id="env_decay" value="2.0"/>
-  <PARAM id="env_sustain" value="0.88"/>
-  <PARAM id="env_release" value="6.0"/>
-  <PARAM id="env_filter_mod" value="25"/>
-  <PARAM id="lfo_speed" value="0.22"/>
-  <PARAM id="lfo_depth" value="38"/>
-  <PARAM id="lfo_target" value="1"/>
-  <PARAM id="output_gain" value="-3"/>
-  <PARAM id="env_sustain_on" value="1"/>
-  <PARAM id="fenv_attack" value="0.001"/>
-  <PARAM id="fenv_decay" value="2.0"/>
-  <PARAM id="fenv_sustain" value="0.0"/>
-  <PARAM id="fenv_release" value="3.0"/>
-  <PARAM id="fenv_sustain_on" value="1"/>
-  <PARAM id="osc2_on" value="1"/>
-  <PARAM id="osc2_waveform" value="0"/>
-  <PARAM id="osc2_mult" value="1"/>
-  <PARAM id="osc2_phase" value="120"/>
-  <PARAM id="osc2_mix_mode" value="0"/>
-  <PARAM id="osc2_mix_depth" value="42"/>
-  <PARAM id="osc2_env_on" value="0"/>
-  <PARAM id="osc2_env_attack" value="0.1"/>
-  <PARAM id="osc2_env_decay" value="0.5"/>
-  <PARAM id="osc2_env_sustain" value="0.8"/>
-  <PARAM id="osc2_env_release" value="3.0"/>
-  <PARAM id="osc2_env_sus_on" value="1"/>
-  <PARAM id="osc2_flt_on" value="0"/>
-  <PARAM id="osc2_flt_cutoff" value="4000"/>
-  <PARAM id="osc2_flt_reso" value="0"/>
-  <PARAM id="osc2_flt_mode" value="0"/>
-  <PARAM id="osc2_fenv_atk" value="0.001"/>
-  <PARAM id="osc2_fenv_dec" value="1.5"/>
-  <PARAM id="osc2_fenv_sus" value="0"/>
-  <PARAM id="osc2_fenv_rel" value="3.0"/>
-  <PARAM id="osc2_fenv_sus_on" value="1"/>
-  <PARAM id="osc2_fenv_depth" value="0"/>
-</Parameters>
+<?xml version='1.0' encoding='UTF-8'?>
+<AudioPluginsPreset name="CS80 Strings" pluginId="com.spellbound.arcanist" version="1">
+  <Parameter id="osc_waveform" value="2" />
+  <Parameter id="osc_tune" value="0" />
+  <Parameter id="osc_detune" value="18" />
+  <Parameter id="filter_cutoff" value="4000" />
+  <Parameter id="filter_resonance" value="0.45" />
+  <Parameter id="filter_mode" value="0" />
+  <Parameter id="env_attack" value="0.7" />
+  <Parameter id="env_decay" value="2.0" />
+  <Parameter id="env_sustain" value="0.88" />
+  <Parameter id="env_release" value="6.0" />
+  <Parameter id="env_filter_mod" value="25" />
+  <Parameter id="lfo_speed" value="0.22" />
+  <Parameter id="lfo_depth" value="38" />
+  <Parameter id="lfo_target" value="1" />
+  <Parameter id="output_gain" value="-3" />
+  <Parameter id="env_sustain_on" value="1" />
+  <Parameter id="fenv_attack" value="0.001" />
+  <Parameter id="fenv_decay" value="2.0" />
+  <Parameter id="fenv_sustain" value="0.0" />
+  <Parameter id="fenv_release" value="3.0" />
+  <Parameter id="fenv_sustain_on" value="1" />
+  <Parameter id="osc2_on" value="1" />
+  <Parameter id="osc2_waveform" value="0" />
+  <Parameter id="osc2_mult" value="1" />
+  <Parameter id="osc2_phase" value="120" />
+  <Parameter id="osc2_mix_mode" value="0" />
+  <Parameter id="osc2_mix_depth" value="42" />
+  <Parameter id="osc2_env_on" value="0" />
+  <Parameter id="osc2_env_attack" value="0.1" />
+  <Parameter id="osc2_env_decay" value="0.5" />
+  <Parameter id="osc2_env_sustain" value="0.8" />
+  <Parameter id="osc2_env_release" value="3.0" />
+  <Parameter id="osc2_env_sus_on" value="1" />
+  <Parameter id="osc2_flt_on" value="0" />
+  <Parameter id="osc2_flt_cutoff" value="4000" />
+  <Parameter id="osc2_flt_reso" value="0" />
+  <Parameter id="osc2_flt_mode" value="0" />
+  <Parameter id="osc2_fenv_atk" value="0.001" />
+  <Parameter id="osc2_fenv_dec" value="1.5" />
+  <Parameter id="osc2_fenv_sus" value="0" />
+  <Parameter id="osc2_fenv_rel" value="3.0" />
+  <Parameter id="osc2_fenv_sus_on" value="1" />
+  <Parameter id="osc2_fenv_depth" value="0" />
+</AudioPluginsPreset>

@@ -108,9 +108,14 @@ target_include_directories(test_voice PRIVATE Source/ Tests/)
 target_compile_features(test_voice PRIVATE cxx_std_20)
 add_test(NAME Voice COMMAND test_voice)
 
-# Task 5 (FactoryPresets conversion) and Task 6 (RadioButtonGroup, if it
-# gains its own test) each append their own blocks here once those files
-# exist -- deliberately not included yet.
+add_executable(test_factorypresets Tests/test_factorypresets.cpp)
+target_include_directories(test_factorypresets PRIVATE Source/ Tests/)
+target_link_libraries(test_factorypresets PRIVATE AudioPluginsCommon::presets)
+target_compile_features(test_factorypresets PRIVATE cxx_std_20)
+add_test(NAME FactoryPresets COMMAND test_factorypresets)
+
+# Task 6 (RadioButtonGroup, if it gains its own test) appends its own block
+# here once that file exists -- deliberately not included yet.
 
 # ── Install rules ─────────────────────────────────────────────────────────────
 set(_BIN "${CMAKE_BINARY_DIR}/bin")
