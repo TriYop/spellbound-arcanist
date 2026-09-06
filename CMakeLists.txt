@@ -7,111 +7,138 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(FetchContent)
 
-FetchContent_Declare(
-    JUCE
-    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-    GIT_TAG        8.0.13
+# DPF has no tagged releases -- pin the exact commit SHA Hex/Pugilist/Tank/
+# Outflank all use.
+set(AUDIOPLUGINS_DPF_GIT_TAG "4238e1c7f0351bbe488d79f0899c540543ac7583" CACHE STRING
+    "Pinned DPF commit (DISTRHO/DPF has no git tags to pin to instead)")
+
+# CAVEAT (CMake FetchContent): the patch step only runs on a *fresh*
+# population of the source dir -- delete build/_deps/dpf-* to force a
+# clean re-fetch if you need to be sure the patch actually took effect.
+FetchContent_Declare(dpf
+    GIT_REPOSITORY https://github.com/DISTRHO/DPF.git
+    GIT_TAG        ${AUDIOPLUGINS_DPF_GIT_TAG}
     GIT_SHALLOW    TRUE
+    PATCH_COMMAND  ${CMAKE_COMMAND}
+                   -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/dpf-clap-state-chunked-read.patch
+                   -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/apply_patch.cmake
 )
-FetchContent_MakeAvailable(JUCE)
+FetchContent_MakeAvailable(dpf)
 
-set(CLAP_JUCE_EXTENSIONS_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-FetchContent_Declare(
-    clap-juce-extensions
-    GIT_REPOSITORY https://github.com/free-audio/clap-juce-extensions.git
-    GIT_TAG        main
-)
-FetchContent_MakeAvailable(clap-juce-extensions)
-
-# Embed factory presets as binary data
-file(GLOB FACTORY_PRESET_FILES "Source/Presets/Factory/*.xml")
-juce_add_binary_data(Arcanist_BinaryData
-    HEADER_NAME BinaryData.h
-    NAMESPACE   Arcanist_BinaryData
-    SOURCES     ${FACTORY_PRESET_FILES}
-)
-
-set(Arcanist_FORMATS VST3 Standalone)
+set(Arcanist_DPF_TARGETS vst3 clap lv2 jack)
 if(APPLE)
-    list(APPEND Arcanist_FORMATS AU)
+    list(APPEND Arcanist_DPF_TARGETS au)
 endif()
 
-juce_add_plugin(Arcanist
-    COMPANY_NAME                "spellbound"
-    PLUGIN_MANUFACTURER_CODE    Spbd
-    PLUGIN_CODE                 Arcn
-    FORMATS                     ${Arcanist_FORMATS}
-    PRODUCT_NAME                "Arcanist"
-    BUNDLE_ID                   "com.spellbound.arcanist"
-    IS_SYNTH                    TRUE
-    NEEDS_MIDI_INPUT            TRUE
-    NEEDS_MIDI_OUTPUT           FALSE
-    IS_MIDI_EFFECT              FALSE
-    EDITOR_WANTS_KEYBOARD_FOCUS FALSE
-    DESCRIPTION                 "Soft pads and drones synthesizer"
+dpf_add_plugin(Arcanist
+    TARGETS ${Arcanist_DPF_TARGETS}
+    UI_TYPE opengl
+    FILES_DSP
+        Source/ArcanistPluginAdapter.cpp
+        Source/Synthesis/Voice.cpp
+        Source/Synthesis/Oscillator.cpp
+        Source/Synthesis/Filter.cpp
+        Source/Synthesis/Envelope.cpp
+        Source/Synthesis/LFO.cpp
+    FILES_UI
+        Source/ArcanistUI.cpp
 )
 
-target_sources(Arcanist PRIVATE
-    Source/PluginProcessor.cpp
-    Source/PluginEditor.cpp
-    Source/PresetManager.cpp
-    Source/Synthesis/Voice.cpp
-    Source/Synthesis/Oscillator.cpp
-    Source/Synthesis/Filter.cpp
-    Source/Synthesis/Envelope.cpp
-    Source/Synthesis/LFO.cpp
-    Source/UI/ArcanistLookAndFeel.cpp
-)
-
-target_compile_definitions(Arcanist PUBLIC
-    JUCE_WEB_BROWSER=0
-    JUCE_USE_CURL=0
-    JUCE_VST3_CAN_REPLACE_VST2=0
-)
-
-target_include_directories(Arcanist PRIVATE Source/)
-
+target_include_directories(Arcanist PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 target_compile_features(Arcanist PUBLIC cxx_std_20)
 
-target_link_libraries(Arcanist
-    PRIVATE
-        Arcanist_BinaryData
-        juce::juce_audio_utils
-        juce::juce_audio_plugin_client
-        juce::juce_dsp
-        clap_juce_extensions
-    PUBLIC
-        juce::juce_recommended_config_flags
-        juce::juce_recommended_lto_flags
-        juce::juce_recommended_warning_flags
-)
-
-clap_juce_extensions_plugin(
-    TARGET      Arcanist
-    CLAP_ID     "com.spellbound.arcanist"
-    CLAP_FEATURES synth
-    CLAP_PROCESS_EVENTS_RESOLUTION_SAMPLES 64
-)
-
-# ── Install rules ─────────────────────────────────────────────────────────────
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+# Same DPF WebViewImpl.cpp / GNU `typeof` workaround Hex/Pugilist/Tank need.
+if(TARGET dgl-opengl)
+    set_target_properties(dgl-opengl PROPERTIES CXX_EXTENSIONS ON)
 endif()
 
-set(_ARTS "${CMAKE_BINARY_DIR}/Arcanist_artefacts/${CMAKE_BUILD_TYPE}")
+# ── Shared HUI/presets library ───────────────────────────────────────────────
+# ORDERING (load-bearing): must come after dpf_add_plugin(Arcanist ...) --
+# DPF creates its DGL target lazily inside that call.
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-install(DIRECTORY  "${_ARTS}/VST3/Arcanist.vst3"
+FetchContent_Declare(AudioPluginsCommon
+    GIT_REPOSITORY https://github.com/TriYop/spellbound-common.git
+    GIT_TAG        v0.4.0
+    GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(AudioPluginsCommon)
+
+target_link_libraries(Arcanist-ui PRIVATE AudioPluginsCommon::hui_dgl AudioPluginsCommon::presets)
+
+# ── Unit tests (no JUCE/DPF dependency) ──────────────────────────────────────
+enable_testing()
+
+add_executable(test_audiobuffer Tests/test_audiobuffer.cpp)
+target_include_directories(test_audiobuffer PRIVATE Source/ Tests/)
+target_compile_features(test_audiobuffer PRIVATE cxx_std_20)
+add_test(NAME AudioBuffer COMMAND test_audiobuffer)
+
+add_executable(test_dsputil Tests/test_dsputil.cpp)
+target_include_directories(test_dsputil PRIVATE Source/ Tests/)
+target_compile_features(test_dsputil PRIVATE cxx_std_20)
+add_test(NAME DspUtil COMMAND test_dsputil)
+
+add_executable(test_oscillator Tests/test_oscillator.cpp Source/Synthesis/Oscillator.cpp)
+target_include_directories(test_oscillator PRIVATE Source/ Tests/)
+target_compile_features(test_oscillator PRIVATE cxx_std_20)
+add_test(NAME Oscillator COMMAND test_oscillator)
+
+add_executable(test_filter Tests/test_filter.cpp Source/Synthesis/Filter.cpp)
+target_include_directories(test_filter PRIVATE Source/ Tests/)
+target_compile_features(test_filter PRIVATE cxx_std_20)
+add_test(NAME Filter COMMAND test_filter)
+
+add_executable(test_envelope Tests/test_envelope.cpp Source/Synthesis/Envelope.cpp)
+target_include_directories(test_envelope PRIVATE Source/ Tests/)
+target_compile_features(test_envelope PRIVATE cxx_std_20)
+add_test(NAME Envelope COMMAND test_envelope)
+
+add_executable(test_lfo Tests/test_lfo.cpp Source/Synthesis/LFO.cpp)
+target_include_directories(test_lfo PRIVATE Source/ Tests/)
+target_compile_features(test_lfo PRIVATE cxx_std_20)
+add_test(NAME LFO COMMAND test_lfo)
+
+add_executable(test_voice
+    Tests/test_voice.cpp
+    Source/Synthesis/Voice.cpp Source/Synthesis/Oscillator.cpp
+    Source/Synthesis/Filter.cpp Source/Synthesis/Envelope.cpp Source/Synthesis/LFO.cpp
+)
+target_include_directories(test_voice PRIVATE Source/ Tests/)
+target_compile_features(test_voice PRIVATE cxx_std_20)
+add_test(NAME Voice COMMAND test_voice)
+
+# Task 5 (FactoryPresets conversion) and Task 6 (RadioButtonGroup, if it
+# gains its own test) each append their own blocks here once those files
+# exist -- deliberately not included yet.
+
+# ── Install rules ─────────────────────────────────────────────────────────────
+set(_BIN "${CMAKE_BINARY_DIR}/bin")
+
+install(DIRECTORY  "${_BIN}/Arcanist.vst3"
         DESTINATION VST3
         COMPONENT   Runtime
         USE_SOURCE_PERMISSIONS)
 
-install(FILES      "${_ARTS}/CLAP/Arcanist.clap"
-        DESTINATION CLAP
-        COMPONENT   Runtime
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                    GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+if(APPLE)
+    install(DIRECTORY  "${_BIN}/Arcanist.clap"
+            DESTINATION CLAP
+            COMPONENT   Runtime
+            USE_SOURCE_PERMISSIONS)
+else()
+    install(FILES      "${_BIN}/Arcanist.clap"
+            DESTINATION CLAP
+            COMPONENT   Runtime
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                        GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
 
-install(PROGRAMS   "${_ARTS}/Standalone/Arcanist"
+install(DIRECTORY  "${_BIN}/Arcanist.lv2"
+        DESTINATION LV2
+        COMPONENT   Runtime
+        USE_SOURCE_PERMISSIONS)
+
+install(PROGRAMS   "${_BIN}/Arcanist"
         DESTINATION bin
         COMPONENT   Runtime)
 
@@ -123,7 +150,7 @@ install(PROGRAMS   "${CMAKE_CURRENT_SOURCE_DIR}/scripts/install.sh"
 # ── CPack (TGZ) ───────────────────────────────────────────────────────────────
 set(CPACK_GENERATOR                 TGZ)
 set(CPACK_PACKAGE_NAME              Arcanist)
-set(CPACK_PACKAGE_VENDOR            spellbound)
+set(CPACK_PACKAGE_VENDOR            Spellbound)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Soft pads and drones synthesizer")
 set(CPACK_PACKAGE_VERSION           ${PROJECT_VERSION})
 set(CPACK_SYSTEM_NAME               linux-x86_64)
