@@ -9,3 +9,5 @@ build-release/
 .cmake.state
 cmake_install.cmake
 CTestTestfile.cmake
+.worktrees/
+.superpowers/
