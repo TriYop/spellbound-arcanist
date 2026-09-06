@@ -1,4 +1,6 @@
 #include "Oscillator.h"
+#include "DspUtil.h"
+#include <algorithm>
 
 Oscillator::Oscillator() {}
 Oscillator::~Oscillator() {}
@@ -9,9 +11,9 @@ void Oscillator::prepare (double sampleRate)
     phase_ = 0.f;
 }
 
-void Oscillator::process (juce::AudioBuffer<float>& buffer, int midiNote, float tune, float detune)
+void Oscillator::process (dsp::AudioBuffer& buffer, int midiNote, float tune, float detune)
 {
-    float baseFreq = juce::MidiMessage::getMidiNoteInHertz (midiNote);
+    float baseFreq = dsp::midiNoteToHz (midiNote);
     baseFreq *= std::pow (2.f, tune   / 1200.f);
     baseFreq *= std::pow (2.f, detune / 1200.f);
 
@@ -29,12 +31,12 @@ void Oscillator::process (juce::AudioBuffer<float>& buffer, int midiNote, float 
     }
 }
 
-void Oscillator::processWithFM (juce::AudioBuffer<float>& buffer, int midiNote,
+void Oscillator::processWithFM (dsp::AudioBuffer& buffer, int midiNote,
                                   float tune, float detune,
-                                  const juce::AudioBuffer<float>& fmMod,
+                                  const dsp::AudioBuffer& fmMod,
                                   float fmDepthSemitones)
 {
-    float baseFreq = juce::MidiMessage::getMidiNoteInHertz (midiNote);
+    float baseFreq = dsp::midiNoteToHz (midiNote);
     baseFreq *= std::pow (2.f, tune   / 1200.f);
     baseFreq *= std::pow (2.f, detune / 1200.f);
 
@@ -47,7 +49,7 @@ void Oscillator::processWithFM (juce::AudioBuffer<float>& buffer, int midiNote,
     {
         const float modValue = (n < fmMod.getNumSamples()) ? mod[n] : 0.f;
         const float modFreq  = baseFreq * std::pow (2.f, modValue * fmDepthSemitones / 12.f);
-        const float phaseInc = juce::jlimit (0.f, 0.5f, modFreq / sr);
+        const float phaseInc = std::clamp (modFreq / sr, 0.f, 0.5f);
 
         const float sample = generateSample (phase_);
         phase_ += phaseInc;

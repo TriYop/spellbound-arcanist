@@ -1,5 +1,5 @@
 #pragma once
-#include <juce_audio_basics/juce_audio_basics.h>
+#include "AudioBuffer.h"
 
 class Filter
 {
@@ -10,7 +10,7 @@ public:
     ~Filter();
 
     void prepare (double sampleRate);
-    void process (juce::AudioBuffer<float>& buffer);
+    void process (dsp::AudioBuffer& buffer);
 
     void setCutoff (float cutoff);
     void setResonance (float resonance);

@@ -1,5 +1,6 @@
 #include "Filter.h"
 #include <cmath>
+#include <algorithm>
 
 Filter::Filter()
 {
@@ -17,7 +18,7 @@ void Filter::prepare (double sampleRate)
     updateCoefficients();
 }
 
-void Filter::process (juce::AudioBuffer<float>& buffer)
+void Filter::process (dsp::AudioBuffer& buffer)
 {
     for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
     {
@@ -45,19 +46,19 @@ void Filter::process (juce::AudioBuffer<float>& buffer)
 
 void Filter::setCutoff (float cutoff)
 {
-    targetCutoff_ = juce::jlimit (20.f, 20000.f, cutoff);
+    targetCutoff_ = std::clamp (cutoff, 20.f, 20000.f);
 }
 
 void Filter::setResonance (float resonance)
 {
-    resonance_ = juce::jlimit (0.f, 1.f, resonance);
+    resonance_ = std::clamp (resonance, 0.f, 1.f);
     updateCoefficients();
 }
 
 void Filter::updateCoefficients()
 {
     float wc = 2.f * 3.14159265f * cutoff_ / static_cast<float> (sampleRate_);
-    wc = juce::jlimit (0.001f, 3.14159f, wc);
+    wc = std::clamp (wc, 0.001f, 3.14159f);
 
     float sinWc = std::sin (wc);
     float cosWc = std::cos (wc);

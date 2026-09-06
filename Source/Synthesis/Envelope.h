@@ -1,6 +1,7 @@
 #pragma once
-#include <juce_audio_basics/juce_audio_basics.h>
+#include "AudioBuffer.h"
 #include <cmath>
+#include <algorithm>
 
 class Envelope
 {
@@ -9,7 +10,7 @@ public:
     ~Envelope();
 
     void prepare (double sampleRate, double tailLength);
-    void process (juce::AudioBuffer<float>& buffer);
+    void process (dsp::AudioBuffer& buffer);
     void advance (int numSamples); // advance state without touching audio (for filter envelope)
 
     void noteOn();
@@ -17,7 +18,7 @@ public:
 
     void setAttack  (float attackSeconds)  { attack_  = attackSeconds; }
     void setDecay   (float decaySeconds)   { decay_   = decaySeconds; }
-    void setSustain (float sustainLevel)   { sustain_ = juce::jlimit (0.f, 1.f, sustainLevel); }
+    void setSustain (float sustainLevel)   { sustain_ = std::clamp (sustainLevel, 0.f, 1.f); }
     void setRelease (float releaseSeconds) { release_ = releaseSeconds; }
     void setSustainEnabled (bool enabled)  { sustainEnabled_ = enabled; }
 
