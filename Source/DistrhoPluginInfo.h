@@ -38,4 +38,23 @@
 #define DISTRHO_UI_USER_RESIZABLE 0
 #define DISTRHO_UI_USE_NANOVG     1
 
+// Host parameter indices, shared between ArcanistPluginAdapter and
+// ArcanistUI. Order matches the JUCE-era createParameterLayout() exactly.
+enum ArcanistParameters {
+    kParamOscWaveform = 0, kParamOscTune, kParamOscDetune,
+    kParamFilterMode, kParamFilterCutoff, kParamFilterResonance,
+    kParamEnvAttack, kParamEnvDecay, kParamEnvSustain, kParamEnvRelease,
+    kParamEnvFilterMod, kParamEnvSustainOn,
+    kParamFEnvAttack, kParamFEnvDecay, kParamFEnvSustain, kParamFEnvRelease, kParamFEnvSustainOn,
+    kParamLfoTarget, kParamLfoSpeed, kParamLfoDepth,
+    kParamOutputGain,
+    kParamOsc2On, kParamOsc2Waveform, kParamOsc2Mult, kParamOsc2Phase,
+    kParamOsc2MixMode, kParamOsc2MixDepth,
+    kParamOsc2EnvOn, kParamOsc2EnvAttack, kParamOsc2EnvDecay, kParamOsc2EnvSustain, kParamOsc2EnvRelease, kParamOsc2EnvSustainOn,
+    kParamOsc2FltOn, kParamOsc2FltCutoff, kParamOsc2FltResonance, kParamOsc2FltMode,
+    kParamOsc2FEnvAttack, kParamOsc2FEnvDecay, kParamOsc2FEnvSustain, kParamOsc2FEnvRelease, kParamOsc2FEnvSustainOn,
+    kParamOsc2FEnvDepth,
+    kArcanistParamCount // 43
+};
+
 #endif // DISTRHO_PLUGIN_INFO_H_INCLUDED
