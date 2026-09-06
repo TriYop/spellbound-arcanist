@@ -1,5 +1,5 @@
 #pragma once
-#include <juce_audio_basics/juce_audio_basics.h>
+#include "AudioBuffer.h"
 #include <cmath>
 #include <cstdint>
 
@@ -14,11 +14,11 @@ public:
     void prepare (double sampleRate);
 
     // Adds generated signal to buffer.
-    void process (juce::AudioBuffer<float>& buffer, int midiNote, float tune, float detune);
+    void process (dsp::AudioBuffer& buffer, int midiNote, float tune, float detune);
 
     // FM variant: per-sample frequency deviation = fmMod[ch0] × fmDepthSemitones.
-    void processWithFM (juce::AudioBuffer<float>& buffer, int midiNote, float tune, float detune,
-                        const juce::AudioBuffer<float>& fmMod, float fmDepthSemitones);
+    void processWithFM (dsp::AudioBuffer& buffer, int midiNote, float tune, float detune,
+                        const dsp::AudioBuffer& fmMod, float fmDepthSemitones);
 
     void setFrequency (float hz)      { frequency_ = hz; }
     void setWaveform  (Waveform w)    { waveform_  = w;  }

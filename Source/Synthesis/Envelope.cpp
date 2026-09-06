@@ -16,30 +16,44 @@ void Envelope::prepare (double sampleRate, double tailLength)
 
 void Envelope::tickSample()
 {
-    computeEnvelopeValue(); // updates currentLevel_
-
+    // Advance progress (and handle stage transitions) *before* computing the
+    // envelope value for this sample, so computeEnvelopeValue() always sees
+    // the post-increment progress. Computing the value first (against the
+    // pre-increment progress) introduced a systematic one-sample lag: attack
+    // never quite reached 1.0, decay never quite settled at the sustain
+    // level, and release never quite reached 0 before the stage flipped to
+    // Inactive. See TriYop/spellbound-arcanist#1.
     float samplesPerSecond = static_cast<float> (sampleRate_);
     stageProgress_ += 1.f / samplesPerSecond;
 
-    if (stage_ == Stage::Attack && stageProgress_ >= attack_)
+    // Repeated float addition of 1/sampleRate accumulates rounding error, so
+    // an exact >= comparison against the stage length can fire one sample
+    // late (e.g. 10 additions of 1.f/100.f sums to just under the float
+    // literal 0.1f). A small epsilon absorbs that drift without materially
+    // changing stage timing. See TriYop/spellbound-arcanist#2.
+    constexpr float kEpsilon = 1e-5f;
+
+    if (stage_ == Stage::Attack && stageProgress_ >= attack_ - kEpsilon)
     {
         stage_ = Stage::Decay;
         stageProgress_ = 0.f;
     }
-    else if (stage_ == Stage::Decay && stageProgress_ >= decay_)
+    else if (stage_ == Stage::Decay && stageProgress_ >= decay_ - kEpsilon)
     {
         // ADR mode: bypass Sustain, go directly to Release
         stage_ = sustainEnabled_ ? Stage::Sustain : Stage::Release;
         stageProgress_ = 0.f;
     }
-    else if (stage_ == Stage::Release && stageProgress_ >= release_)
+    else if (stage_ == Stage::Release && stageProgress_ >= release_ - kEpsilon)
     {
         stage_ = Stage::Inactive;
         stageProgress_ = 0.f;
     }
+
+    computeEnvelopeValue(); // updates currentLevel_
 }
 
-void Envelope::process (juce::AudioBuffer<float>& buffer)
+void Envelope::process (dsp::AudioBuffer& buffer)
 {
     int numChannels = buffer.getNumChannels();
 
@@ -116,5 +130,5 @@ float Envelope::computeEnvelopeValue()
             break;
     }
 
-    return juce::jlimit (0.f, 1.f, currentLevel_);
+    return std::clamp (currentLevel_, 0.f, 1.f);
 }

@@ -1,9 +1,10 @@
 #pragma once
-#include <juce_audio_basics/juce_audio_basics.h>
+#include "AudioBuffer.h"
 #include "Oscillator.h"
 #include "Filter.h"
 #include "Envelope.h"
 #include "LFO.h"
+#include <algorithm>
 
 class Voice
 {
@@ -15,7 +16,7 @@ public:
     ~Voice();
 
     void prepare (double sampleRate, int samplesPerBlock, double tailLength);
-    void process (juce::AudioBuffer<float>& buffer);
+    void process (dsp::AudioBuffer& buffer);
 
     void noteOn   (int midiNoteNumber, float velocity);
     void noteOff  ();
@@ -61,7 +62,7 @@ public:
     // ── Osc 2 chain ────────────────────────────────────────────────────────────
     void setOsc2Enabled    (bool  b) { osc2Enabled_ = b; }
     void setOsc2Waveform   (Oscillator::Waveform w) { oscB_.setWaveform (w); }
-    void setOsc2Mult       (int   i) { osc2Mult_    = juce::jlimit (0, 3, i); }
+    void setOsc2Mult       (int   i) { osc2Mult_    = std::clamp (i, 0, 3); }
     void setOsc2Phase      (float d) { osc2Phase_   = d; }        // degrees
     void setOsc2MixMode    (MixMode m) { osc2MixMode_ = m; }
     void setOsc2MixDepth   (float d) { osc2MixDepth_ = d; }       // 0-100
@@ -136,6 +137,6 @@ private:
     double sampleRate_    = 44100.0;
     int    samplesPerBlock_ = 256;
 
-    juce::AudioBuffer<float> voiceBuffer_;
-    juce::AudioBuffer<float> osc2Buffer_; // mono: Osc 2 chain output
+    dsp::AudioBuffer voiceBuffer_;
+    dsp::AudioBuffer osc2Buffer_; // mono: Osc 2 chain output
 };

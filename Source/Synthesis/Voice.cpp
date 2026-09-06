@@ -1,4 +1,6 @@
 #include "Voice.h"
+#include "DspUtil.h"
+#include <algorithm>
 
 // Multiplier index → offset in cents: 0.5x=-1200, 1x=0, 2x=+1200, 4x=+2400
 static constexpr float kMultCents[4] = { -1200.f, 0.f, 1200.f, 2400.f };
@@ -36,8 +38,8 @@ void Voice::noteOn (int midiNoteNumber, float velocity)
     isActive_       = true;
     timeSinceNoteOn_ = 0.f;
 
-    oscillator_.setFrequency  (juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber));
-    oscillator2_.setFrequency (juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber));
+    oscillator_.setFrequency  (dsp::midiNoteToHz (midiNoteNumber));
+    oscillator2_.setFrequency (dsp::midiNoteToHz (midiNoteNumber));
     envelope_.noteOn();
     fenv_.noteOn();
 
@@ -54,7 +56,7 @@ void Voice::noteOff()
     fenv2_.noteOff();
 }
 
-void Voice::process (juce::AudioBuffer<float>& buffer)
+void Voice::process (dsp::AudioBuffer& buffer)
 {
     if (!isActive_) return;
 
@@ -86,7 +88,7 @@ void Voice::process (juce::AudioBuffer<float>& buffer)
             fenv2_.advance (numSamples);
             const float c = osc2FilterCutoff_
                           * std::pow (2.f, osc2FenvDepth_ * fenv2Val / 25.f);
-            filter2_.setCutoff    (juce::jlimit (20.f, 20000.f, c));
+            filter2_.setCutoff    (std::clamp (c, 20.f, 20000.f));
             filter2_.setResonance (osc2FilterResonance_);
             filter2_.process      (osc2Buffer_);
         }
@@ -126,7 +128,7 @@ void Voice::process (juce::AudioBuffer<float>& buffer)
         if (lfoTarget_ == 0 && lfoDepth_ > 0.1f)
             cutoff *= std::pow (2.f, lfoValue * lfoDepth_ * 0.02f);
 
-        filter_.setCutoff    (juce::jlimit (20.f, 20000.f, cutoff));
+        filter_.setCutoff    (std::clamp (cutoff, 20.f, 20000.f));
         filter_.setResonance (filterResonance_);
         filter_.process      (voiceBuffer_);
     }
@@ -172,7 +174,7 @@ void Voice::process (juce::AudioBuffer<float>& buffer)
     }
 
     // ── Output gain + amplitude LFO ────────────────────────────────────────────
-    float gainLinear = velocity_ * juce::Decibels::decibelsToGain (outputGain_);
+    float gainLinear = velocity_ * dsp::dbToGain (outputGain_);
     if (lfoTarget_ == 1 && lfoDepth_ > 0.1f)
         gainLinear *= (1.f + lfoValue * lfoDepth_ * 0.005f);
     voiceBuffer_.applyGain (gainLinear);
