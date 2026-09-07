@@ -37,6 +37,14 @@
 // getPluginInstancePointer() -- the JUCE-era PresetManager's
 // setCurrentProgram() equivalent.
 #define DISTRHO_PLUGIN_WANT_DIRECT_ACCESS 1
+// See Hex's/Tank's DistrhoPluginInfo.h for why this must be forced to 0: DPF
+// defaults it to DISTRHO_PLUGIN_WANT_DIRECT_ACCESS's value when unset, which
+// is wrong for a CMake build that produces two separate LV2 modules
+// (Arcanist_dsp.so, Arcanist_ui.so), not one combined object. Left unset,
+// lv2lint's generated manifest.ttl wrongly points ui:binary at
+// Arcanist_dsp.so (which has no lv2ui_descriptor symbol) instead of
+// Arcanist_ui.so.
+#define DISTRHO_PLUGIN_AND_UI_IN_SINGLE_OBJECT 0
 
 #define DISTRHO_UI_DEFAULT_WIDTH  1250
 #define DISTRHO_UI_DEFAULT_HEIGHT 860
