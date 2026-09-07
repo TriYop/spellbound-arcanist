@@ -49,6 +49,12 @@ void ArcanistPluginAdapter::activate()
     voices_.resize(16);
     for (auto& v : voices_)
         v.prepare(getSampleRate(), static_cast<int>(getBufferSize()), 3.0);
+
+    // Prime outputBuffer_'s internal channels_ vector to capacity 2 here
+    // (activate() is not real-time constrained) so run()'s wrapExternal()
+    // call never needs to allocate.
+    float* primingChannels[2] = { nullptr, nullptr };
+    outputBuffer_.wrapExternal(primingChannels, 2, 0);
 }
 
 void ArcanistPluginAdapter::applyParametersToVoice(Voice& voice) const
@@ -162,12 +168,11 @@ void ArcanistPluginAdapter::run(const float**, float** outputs, const uint32_t f
 
     for (uint32_t i = 0; i < midiEventCount; ++i) handleMidiEvent(midiEvents[i]);
 
-    dsp::AudioBuffer out;
     float* channels[2] = { outputs[0], outputs[1] };
-    out.wrapExternal(channels, 2, static_cast<int>(frames));
-    out.clear();
+    outputBuffer_.wrapExternal(channels, 2, static_cast<int>(frames));
+    outputBuffer_.clear();
 
-    for (auto& voice : voices_) voice.process(out);
+    for (auto& voice : voices_) voice.process(outputBuffer_);
 
     if (fadeOutSamplesRemaining_ > 0)
     {
