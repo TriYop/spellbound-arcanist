@@ -51,6 +51,16 @@ private:
     std::array<float, kArcanistParamCount> values_;
     std::vector<Voice> voices_; // 16, matches JUCE-era polyphony
 
+    // Non-owning view over DPF's run() output pointers (see
+    // AudioBuffer::wrapExternal()). Kept as a member rather than a run()
+    // local: reconstructing a dsp::AudioBuffer every block let its
+    // channels_ std::vector reallocate on every single audio callback --
+    // a real-time-safety violation lv2lint's "Plugin Run" test caught
+    // (malloc/free called from run()). activate() primes channels_'s
+    // capacity once up front so the per-block wrapExternal() call in run()
+    // just overwrites existing storage with no allocation.
+    dsp::AudioBuffer outputBuffer_;
+
     // 0.1 s output ramp applied on a full-state reload (preset change via
     // ArcanistUI, see Task 5) -- ported from the JUCE-era
     // fadeOutSamplesTotal_/fadeOutSamplesRemaining_/allNotesOffPending.
