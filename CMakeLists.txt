@@ -33,6 +33,11 @@ endif()
 dpf_add_plugin(Arcanist
     TARGETS ${Arcanist_DPF_TARGETS}
     UI_TYPE opengl
+    # ArcanistUI's "SAVE AS" button (Task 6) opens a native save dialog via
+    # UI::openFileBrowser() -- DPF requires this CMake option (which defines
+    # DGL_USE_FILE_BROWSER) whenever DISTRHO_UI_FILE_BROWSER is set in
+    # DistrhoPluginInfo.h, or DistrhoPluginChecks.h fails the build outright.
+    USE_FILE_BROWSER
     FILES_DSP
         Source/ArcanistPluginAdapter.cpp
         Source/Synthesis/Voice.cpp
