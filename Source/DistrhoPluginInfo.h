@@ -32,11 +32,20 @@
 #define DISTRHO_PLUGIN_NUM_OUTPUTS      2
 #define DISTRHO_PLUGIN_WANT_MIDI_INPUT  1
 #define DISTRHO_PLUGIN_WANT_MIDI_OUTPUT 0
+// ArcanistUI::applyPreset() (Task 6) calls ArcanistPluginAdapter::
+// requestAllNotesOff() directly after a preset change, via
+// getPluginInstancePointer() -- the JUCE-era PresetManager's
+// setCurrentProgram() equivalent.
+#define DISTRHO_PLUGIN_WANT_DIRECT_ACCESS 1
 
 #define DISTRHO_UI_DEFAULT_WIDTH  1250
 #define DISTRHO_UI_DEFAULT_HEIGHT 860
 #define DISTRHO_UI_USER_RESIZABLE 0
 #define DISTRHO_UI_USE_NANOVG     1
+// ArcanistUI's "SAVE AS" button (Task 6) opens a native save dialog via
+// UI::openFileBrowser()/uiFileBrowserSelected() -- DPF gates both behind
+// this flag (default 0, see DistrhoPluginChecks.h).
+#define DISTRHO_UI_FILE_BROWSER   1
 
 // Host parameter indices, shared between ArcanistPluginAdapter and
 // ArcanistUI. Order matches the JUCE-era createParameterLayout() exactly.
